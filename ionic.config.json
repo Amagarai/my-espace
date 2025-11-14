@@ -1,0 +1,7 @@
+{
+  "name": "My-ESpace",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
