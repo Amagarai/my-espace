@@ -1,0 +1,278 @@
+.note-content {
+  --background: #f5f5f5;
+  padding: 20px 16px 100px 16px;
+}
+
+// Page Header
+.page-header {
+  margin-bottom: 24px;
+  padding-top: 10px;
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 6px 0;
+  }
+
+  p {
+    font-size: 14px;
+    color: #8c8c8c;
+    margin: 0;
+  }
+}
+
+// Statistics Cards
+.stats-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 24px;
+    color: white;
+  }
+}
+
+.stat-card.average .stat-icon {
+  background: #96a896;
+}
+
+.stat-card.total .stat-icon {
+  background: #d4a574;
+}
+
+.stat-info {
+  flex: 1;
+
+  .stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: #8c8c8c;
+  }
+}
+
+// Filter Section
+.filter-section {
+  margin-bottom: 24px;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.filter-btn {
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  background: white;
+  color: #8c8c8c;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  &.active {
+    background: #96a896;
+    color: white;
+  }
+}
+
+// Subjects Section
+.subjects-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.subject-group {
+  background: white;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.subject-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.subject-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 24px;
+    color: white;
+  }
+}
+
+.subject-info {
+  flex: 1;
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0 0 4px 0;
+  }
+
+  p {
+    font-size: 13px;
+    color: #8c8c8c;
+    margin: 0;
+  }
+}
+
+// Notes List
+.notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.note-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px;
+  background: #f8f9f8;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f0f0f0;
+  }
+}
+
+.note-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.note-grade {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  color: white;
+  flex-shrink: 0;
+
+  &.green {
+    background: #96a896;
+  }
+
+  &.orange {
+    background: #d4a574;
+  }
+
+  &.yellow {
+    background: #f59e0b;
+  }
+
+  &.red {
+    background: #ef4444;
+  }
+}
+
+.note-details {
+  flex: 1;
+  min-width: 0;
+
+  h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0 0 4px 0;
+  }
+
+  p {
+    font-size: 12px;
+    color: #8c8c8c;
+    margin: 0;
+  }
+}
+
+.note-right {
+  flex-shrink: 0;
+}
+
+.note-score {
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &.green-badge {
+    background: #e8f5e9;
+    color: #96a896;
+  }
+
+  &.orange-badge {
+    background: #fff3e0;
+    color: #d4a574;
+  }
+
+  &.yellow-badge {
+    background: #fef3c7;
+    color: #f59e0b;
+  }
+
+  &.red-badge {
+    background: #fee2e2;
+    color: #ef4444;
+  }
+}
+

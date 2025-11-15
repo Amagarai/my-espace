@@ -1,20 +1,170 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="home-content ion-padding" #content (ionScroll)="onScroll($event)" (ionScrollEnd)="onScrollEnd($event)">
+  <!-- Header Section -->
+  <div class="header-card" [class.collapsed]="isScrolledDown" [style.opacity]="scrollOpacity">
+    <div class="header-left">
+      <div class="leaf-icon">
+        <ion-icon name="logo"></ion-icon>
+      </div>
+      <div class="greeting">
+        <h1>Bonjour Emma</h1>
+        <p>Lundi 18 Mars</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="notification-icon" (click)="goToNotifications()">
+        <ion-icon name="notifications-outline"></ion-icon>
+      </div>
+      <div class="profile-picture">
+        <img src="https://i.pravatar.cc/150?img=12" alt="Profile" />
+      </div>
+    </div>
+  </div>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+  <div class="summary-cards">
+    <div class="summary-card courses-card">
+      <div class="card-header">
+        <ion-icon name="calendar"></ion-icon>
+        <span class="card-label">Cours</span>
+      </div>
+      <div class="card-content">
+        <div class="card-number">4</div>
+        <div class="card-subtitle">aujourd'hui</div>
+      </div>
+    </div>
+    <div class="summary-card notes-card">
+      <div class="card-header">
+        <ion-icon name="star"></ion-icon>
+        <span class="card-label">Notes</span>
+      </div>
+      <div class="card-content">
+        <div class="card-number">15.2</div>
+        <div class="card-subtitle">moyenne</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Schedule Section -->
+  <div class="section">
+    <div class="section-header">
+      <h2>Emploi du temps</h2>
+      <span class="see-all">Voir tout</span>
+    </div>
+    <div class="schedule-list">
+      <div class="schedule-card biology">
+        <div class="schedule-left">
+          <div class="schedule-icon green">
+            <ion-icon name="flask"></ion-icon>
+          </div>
+          <div class="schedule-info">
+            <h4>Biologie</h4>
+            <p>Salle A204</p>
+          </div>
+        </div>
+        <div class="schedule-right">
+          <div class="schedule-time green">9:00</div>
+          <div class="schedule-duration">2h</div>
+        </div>
+      </div>
+      <div class="schedule-card mathematics">
+        <div class="schedule-left">
+          <div class="schedule-icon orange">
+            <ion-icon name="calculator"></ion-icon>
+          </div>
+          <div class="schedule-info">
+            <h4>Mathématiques</h4>
+            <p>Salle B101</p>
+          </div>
+        </div>
+        <div class="schedule-right">
+          <div class="schedule-time orange">14:00</div>
+          <div class="schedule-duration">1h30</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- My Courses Section -->
+  <div class="section">
+    <div class="section-header">
+      <h2>Mes cours</h2>
+      <span class="see-all">Voir tout</span>
+    </div>
+    <div class="courses-grid">
+      <div class="course-card">
+        <div class="course-icon chemistry">
+          <ion-icon name="flask"></ion-icon>
+        </div>
+        <h3>Chimie</h3>
+        <p class="prof-name">Prof. Martin</p>
+        <div class="progress-dots">
+          <span class="dot active green"></span>
+          <span class="dot active green"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+      <div class="course-card">
+        <div class="course-icon geography">
+          <ion-icon name="globe"></ion-icon>
+        </div>
+        <h3>Géographie</h3>
+        <p class="prof-name">Prof. Dubois</p>
+        <div class="progress-dots">
+          <span class="dot active orange"></span>
+          <span class="dot active orange"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Notes Section -->
+  <div class="section">
+    <div class="section-header">
+      <h2>Notes récentes</h2>
+      <span class="see-all">Voir tout</span>
+    </div>
+    <div class="notes-list">
+      <div class="note-item">
+        <div class="note-icon green">
+          <span>A</span>
+        </div>
+        <div class="note-content">
+          <h4>Contrôle Biologie</h4>
+          <p>15 Mars 2024</p>
+        </div>
+        <div class="note-score green-badge">16/20</div>
+      </div>
+      <div class="note-item">
+        <div class="note-icon orange">
+          <span>B</span>
+        </div>
+        <div class="note-content">
+          <h4>Devoir Maths</h4>
+          <p>12 Mars 2024</p>
+        </div>
+        <div class="note-score orange-badge">14/20</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Announcements Section -->
+  <div class="section">
+    <div class="section-header">
+      <h2>Annonces</h2>
+      <span class="see-all">Voir tout</span>
+    </div>
+    <div class="announcement-card">
+      <div class="announcement-icon">
+        <ion-icon name="megaphone-outline"></ion-icon>
+      </div>
+      <div class="announcement-content">
+        <h4>Vacances de Printemps</h4>
+        <p>Les cours reprendront le 8 avril. Bonnes vacances à tous !</p>
+        <span class="announcement-time">Il y a 2 heures</span>
+      </div>
+    </div>
   </div>
 </ion-content>

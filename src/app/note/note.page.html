@@ -1,0 +1,81 @@
+<ion-content [fullscreen]="true" class="note-content ion-padding">
+  <!-- Header Section -->
+  <div class="page-header">
+    <h1>Mes Notes</h1>
+    <p>Consultez vos résultats par matière</p>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-cards">
+    <div class="stat-card average">
+      <div class="stat-icon">
+        <ion-icon name="star"></ion-icon>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">15.2</div>
+        <div class="stat-label">Moyenne générale</div>
+      </div>
+    </div>
+    <div class="stat-card total">
+      <div class="stat-icon">
+        <ion-icon name="document-text"></ion-icon>
+      </div>
+      <div class="stat-info">
+        <div class="stat-value">12</div>
+        <div class="stat-label">Notes enregistrées</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="filter-section">
+    <div class="filter-buttons">
+      <button class="filter-btn" [class.active]="selectedFilter === 'all'" (click)="selectedFilter = 'all'">
+        Toutes
+      </button>
+      <button class="filter-btn" [class.active]="selectedFilter === 'recent'" (click)="selectedFilter = 'recent'">
+        Récentes
+      </button>
+      <button class="filter-btn" [class.active]="selectedFilter === 'best'" (click)="selectedFilter = 'best'">
+        Meilleures
+      </button>
+    </div>
+  </div>
+
+  <!-- Notes by Subject -->
+  <div class="subjects-section">
+    @for (subject of filteredSubjects; track subject.name) {
+      <div class="subject-group">
+        <div class="subject-header">
+          <div class="subject-icon" [style.background]="subject.color">
+            <ion-icon [name]="subject.icon"></ion-icon>
+          </div>
+          <div class="subject-info">
+            <h3>{{ subject.name }}</h3>
+            <p>Moyenne: {{ subject.average }}/20</p>
+          </div>
+        </div>
+        <div class="notes-list">
+          @for (note of subject.notes; track note.id) {
+            <div class="note-card">
+              <div class="note-left">
+                <div class="note-grade" [class]="getGradeClass(note.score)">
+                  <span>{{ getGradeLetter(note.score) }}</span>
+                </div>
+                <div class="note-details">
+                  <h4>{{ note.title }}</h4>
+                  <p>{{ note.date }}</p>
+                </div>
+              </div>
+              <div class="note-right">
+                <div class="note-score" [class]="getScoreClass(note.score)">
+                  {{ note.score }}/20
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</ion-content>

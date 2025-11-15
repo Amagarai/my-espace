@@ -1,0 +1,71 @@
+<ion-content [fullscreen]="true" class="alerte-content ion-padding">
+  <!-- Header Section -->
+  <div class="page-header">
+    <button class="back-btn" (click)="goBack()">
+      <ion-icon name="arrow-back"></ion-icon>
+    </button>
+    <div class="header-content">
+      <h1>Notifications</h1>
+      <p>Restez informé de toutes les actualités</p>
+    </div>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="filter-section">
+    <div class="filter-buttons">
+      <button class="filter-btn" [class.active]="selectedFilter === 'all'" (click)="selectedFilter = 'all'">
+        Toutes
+      </button>
+      <button class="filter-btn" [class.active]="selectedFilter === 'examen'" (click)="selectedFilter = 'examen'">
+        Examens
+      </button>
+      <button class="filter-btn" [class.active]="selectedFilter === 'note'" (click)="selectedFilter = 'note'">
+        Notes
+      </button>
+      <button class="filter-btn" [class.active]="selectedFilter === 'evenement'" (click)="selectedFilter = 'evenement'">
+        Événements
+      </button>
+      <button class="filter-btn" [class.active]="selectedFilter === 'info'" (click)="selectedFilter = 'info'">
+        Infos
+      </button>
+    </div>
+  </div>
+
+  <!-- Notifications List -->
+  <div class="notifications-section">
+    @if (filteredNotifications.length > 0) {
+      @for (notification of filteredNotifications; track notification.id) {
+        <div class="notification-card" [class.unread]="!notification.isRead" [class]="'type-' + notification.type">
+          <div class="notification-icon" [class]="'icon-' + notification.type">
+            <ion-icon [name]="getNotificationIcon(notification.type)"></ion-icon>
+          </div>
+          <div class="notification-content">
+            <div class="notification-header">
+              <h4>{{ notification.title }}</h4>
+              @if (!notification.isRead) {
+                <span class="unread-badge"></span>
+              }
+            </div>
+            <p class="notification-message">{{ notification.message }}</p>
+            <div class="notification-footer">
+              <span class="notification-time">{{ notification.time }}</span>
+              @if (notification.type === 'examen') {
+                <span class="notification-date">{{ notification.date }}</span>
+              }
+            </div>
+          </div>
+          @if (!notification.isRead) {
+            <button class="mark-read-btn" (click)="markAsRead(notification.id)">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+            </button>
+          }
+        </div>
+      }
+    } @else {
+      <div class="empty-state">
+        <ion-icon name="notifications-outline"></ion-icon>
+        <p>Aucune notification</p>
+      </div>
+    }
+  </div>
+</ion-content>

@@ -1,0 +1,125 @@
+<ion-content [fullscreen]="true" class="document-content ion-padding">
+  <!-- Header Section -->
+  <div class="page-header">
+    <h1>Mes Cours</h1>
+    <p>Consultez vos cours et documents</p>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="filter-section">
+    <div class="filter-buttons">
+      <button class="filter-btn" [class.active]="selectedFilter === 'all'" (click)="selectedFilter = 'all'">
+        Tous
+      </button>
+      <button class="filter-btn" [class.active]="selectedFilter === 'recent'" (click)="selectedFilter = 'recent'">
+        Récents
+      </button>
+      <button class="filter-btn" [class.active]="selectedFilter === 'favorites'" (click)="selectedFilter = 'favorites'">
+        Favoris
+      </button>
+    </div>
+  </div>
+
+  <!-- Courses List -->
+  <div class="courses-section">
+    @if (filteredCourses.length > 0) {
+      @for (course of filteredCourses; track course.id) {
+        <div class="course-card">
+          <div class="course-header">
+            <div class="course-icon" [style.background]="course.color">
+              <ion-icon [name]="course.icon"></ion-icon>
+            </div>
+            <div class="course-title-section">
+              <h3>{{ course.name }}</h3>
+              <p class="prof-name">{{ course.professor }}</p>
+            </div>
+            <button class="favorite-btn" [class.active]="course.isFavorite" (click)="toggleFavorite(course.id)">
+              <ion-icon [name]="course.isFavorite ? 'star' : 'star-outline'"></ion-icon>
+            </button>
+          </div>
+          <div class="course-info">
+            <div class="info-row">
+              <div class="info-item">
+                <ion-icon name="calendar-outline"></ion-icon>
+                <span>{{ course.lastUpdate }}</span>
+              </div>
+              <div class="info-item">
+                <ion-icon name="document-text-outline"></ion-icon>
+                <span>{{ course.documentsCount }} documents</span>
+              </div>
+            </div>
+            <div class="progress-section">
+              <div class="progress-info">
+                <span>Progression</span>
+                <span class="progress-percent">{{ course.progress }}%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="course.progress" [style.background]="course.color"></div>
+              </div>
+            </div>
+          </div>
+          <div class="course-actions">
+            <button class="action-btn primary" (click)="openCourseDocuments(course.id)">
+              <ion-icon name="folder-open-outline"></ion-icon>
+              <span>Ouvrir</span>
+            </button>
+            <button class="action-btn secondary">
+              <ion-icon name="download-outline"></ion-icon>
+              <span>Télécharger</span>
+            </button>
+          </div>
+        </div>
+      }
+    } @else {
+      <div class="empty-state">
+        <ion-icon name="document-outline"></ion-icon>
+        <p>Aucun cours disponible</p>
+      </div>
+    }
+  </div>
+
+  <!-- Documents Modal -->
+  @if (selectedCourseId) {
+    <div class="documents-modal-overlay" (click)="closeDocumentsModal()">
+      <div class="documents-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div class="modal-title-section">
+            <div class="modal-course-icon" [style.background]="getSelectedCourse()?.color">
+              <ion-icon [name]="getSelectedCourse()?.icon"></ion-icon>
+            </div>
+            <div>
+              <h2>{{ getSelectedCourse()?.name }}</h2>
+              <p>{{ getSelectedCourse()?.professor }}</p>
+            </div>
+          </div>
+          <button class="close-btn" (click)="closeDocumentsModal()">
+            <ion-icon name="close"></ion-icon>
+          </button>
+        </div>
+        <div class="documents-list">
+          @if (getCourseDocuments().length > 0) {
+            @for (doc of getCourseDocuments(); track doc.id) {
+              <div class="document-item">
+                <div class="document-icon">
+                  <ion-icon name="document-text"></ion-icon>
+                </div>
+                <div class="document-info">
+                  <h4>{{ doc.name }}</h4>
+                  <p>{{ doc.addedDate }}</p>
+                </div>
+                <button class="download-doc-btn" (click)="downloadDocument(doc.id)">
+                  <ion-icon name="download-outline"></ion-icon>
+                </button>
+              </div>
+            }
+          } @else {
+            <div class="empty-documents">
+              <ion-icon name="document-outline"></ion-icon>
+              <p>Aucun document disponible</p>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</ion-content>

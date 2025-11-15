@@ -1,0 +1,189 @@
+<ion-content [fullscreen]="true" class="profil-content ion-padding">
+  <!-- Profile Header -->
+  <div class="profile-header">
+    <div class="profile-avatar">
+      <img src="https://i.pravatar.cc/150?img=12" alt="Profile" />
+      <button class="edit-avatar-btn">
+        <ion-icon name="camera"></ion-icon>
+      </button>
+    </div>
+    <div class="profile-info">
+      <h1>{{ student.firstName }} {{ student.lastName }}</h1>
+      <p class="student-id">{{ student.studentId }}</p>
+      <div class="status-badge active">
+        <ion-icon name="checkmark-circle"></ion-icon>
+        <span>Actif</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Academic Info Card -->
+  <div class="info-card">
+    <div class="card-header">
+      <h3>Informations académiques</h3>
+    </div>
+    <div class="info-list">
+      <div class="info-item">
+        <div class="info-icon">
+          <ion-icon name="school"></ion-icon>
+        </div>
+        <div class="info-content">
+          <p class="info-label">Niveau</p>
+          <p class="info-value">{{ student.level }}</p>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">
+          <ion-icon name="book"></ion-icon>
+        </div>
+        <div class="info-content">
+          <p class="info-label">Filière</p>
+          <p class="info-value">{{ student.major }}</p>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">
+          <ion-icon name="calendar"></ion-icon>
+        </div>
+        <div class="info-content">
+          <p class="info-label">Année académique</p>
+          <p class="info-value">{{ student.academicYear }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Personal Info Card -->
+  <div class="info-card">
+    <div class="card-header">
+      <h3>Informations personnelles</h3>
+      <button class="edit-btn">
+        <ion-icon name="create-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="info-list">
+      <div class="info-item">
+        <div class="info-icon">
+          <ion-icon name="mail"></ion-icon>
+        </div>
+        <div class="info-content">
+          <p class="info-label">Email</p>
+          <p class="info-value">{{ student.email }}</p>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">
+          <ion-icon name="call"></ion-icon>
+        </div>
+        <div class="info-content">
+          <p class="info-label">Téléphone</p>
+          <p class="info-value">{{ student.phone }}</p>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">
+          <ion-icon name="location"></ion-icon>
+        </div>
+        <div class="info-content">
+          <p class="info-label">Adresse</p>
+          <p class="info-value">{{ student.address }}</p>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">
+          <ion-icon name="calendar-outline"></ion-icon>
+        </div>
+        <div class="info-content">
+          <p class="info-label">Date de naissance</p>
+          <p class="info-value">{{ student.birthDate }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics Card -->
+  <div class="stats-card">
+    <h3>Statistiques</h3>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-icon average">
+          <ion-icon name="star"></ion-icon>
+        </div>
+        <div class="stat-info">
+          <p class="stat-value">15.2</p>
+          <p class="stat-label">Moyenne</p>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon courses">
+          <ion-icon name="book"></ion-icon>
+        </div>
+        <div class="stat-info">
+          <p class="stat-value">6</p>
+          <p class="stat-label">Cours</p>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon notes">
+          <ion-icon name="document-text"></ion-icon>
+        </div>
+        <div class="stat-info">
+          <p class="stat-value">12</p>
+          <p class="stat-label">Notes</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Section -->
+  <div class="settings-section">
+    <h3>Paramètres</h3>
+    <div class="settings-list">
+      <button class="setting-item">
+        <div class="setting-left">
+          <div class="setting-icon">
+            <ion-icon name="notifications-outline"></ion-icon>
+          </div>
+          <span>Notifications</span>
+        </div>
+        <ion-icon name="chevron-forward"></ion-icon>
+      </button>
+      <button class="setting-item">
+        <div class="setting-left">
+          <div class="setting-icon">
+            <ion-icon name="lock-closed-outline"></ion-icon>
+          </div>
+          <span>Mot de passe</span>
+        </div>
+        <ion-icon name="chevron-forward"></ion-icon>
+      </button>
+      <button class="setting-item">
+        <div class="setting-left">
+          <div class="setting-icon">
+            <ion-icon name="language-outline"></ion-icon>
+          </div>
+          <span>Langue</span>
+        </div>
+        <ion-icon name="chevron-forward"></ion-icon>
+      </button>
+      <button class="setting-item">
+        <div class="setting-left">
+          <div class="setting-icon">
+            <ion-icon name="help-circle-outline"></ion-icon>
+          </div>
+          <span>Aide & Support</span>
+        </div>
+        <ion-icon name="chevron-forward"></ion-icon>
+      </button>
+      <button class="setting-item logout">
+        <div class="setting-left">
+          <div class="setting-icon">
+            <ion-icon name="log-out-outline"></ion-icon>
+          </div>
+          <span>Déconnexion</span>
+        </div>
+        <ion-icon name="chevron-forward"></ion-icon>
+      </button>
+    </div>
+  </div>
+</ion-content>
