@@ -1,0 +1,91 @@
+<ion-content [fullscreen]="true" class="login-content">
+  <div class="login-container">
+    <div class="login-card">
+      <!-- Logo Section -->
+      <div class="logo-section">
+        <div class="logo-icon">
+          <ion-icon name="logo"></ion-icon>
+        </div>
+        <h1 class="app-title">My-Espace</h1>
+        <p class="app-subtitle">Espace Étudiant</p>
+      </div>
+
+      <!-- Form Section -->
+      <div class="form-section">
+        <h2 class="form-title">Connexion</h2>
+        <p class="form-subtitle">Connectez-vous à votre compte</p>
+
+        @if (errorMessage) {
+          <div class="error-message">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            <span>{{ errorMessage }}</span>
+          </div>
+        }
+
+        <form (ngSubmit)="onLogin()" class="login-form">
+          <!-- Email -->
+          <div class="form-group">
+            <label for="email">Email ou Identifiant</label>
+            <div class="input-wrapper">
+              <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+              <input
+                type="text"
+                id="email"
+                [(ngModel)]="credentials.email"
+                name="email"
+                placeholder="votre.email@univ.ml"
+                class="form-input"
+                required
+                autocomplete="username">
+            </div>
+          </div>
+
+          <!-- Mot de passe -->
+          <div class="form-group">
+            <label for="password">Mot de passe</label>
+            <div class="input-wrapper">
+              <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                id="password"
+                [(ngModel)]="credentials.password"
+                name="password"
+                placeholder="Votre mot de passe"
+                class="form-input"
+                required
+                autocomplete="current-password">
+              <button
+                type="button"
+                class="password-toggle"
+                (click)="togglePasswordVisibility()"
+                aria-label="Afficher/Masquer le mot de passe">
+                <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              </button>
+            </div>
+          </div>
+
+          <!-- Mot de passe oublié -->
+          <div class="form-options">
+            <button type="button" class="forgot-password" (click)="onForgotPassword()">
+              Mot de passe oublié ?
+            </button>
+          </div>
+
+          <!-- Bouton de connexion -->
+          <ion-button
+            type="submit"
+            expand="block"
+            class="login-button"
+            [disabled]="isLoading">
+            @if (isLoading) {
+              <span>Connexion...</span>
+            } @else {
+              <ion-icon name="log-in-outline"></ion-icon>
+              <span>Se connecter</span>
+            }
+          </ion-button>
+        </form>
+      </div>
+    </div>
+  </div>
+</ion-content>

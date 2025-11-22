@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'tabs/home',
+    redirectTo: 'login',
     pathMatch: 'full',
   },
   {
@@ -40,6 +40,10 @@ export const routes: Routes = [
   {
     path: 'alerte',
     loadComponent: () => import('./alerte/alerte.page').then( m => m.AlertePage)
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./login/login.page').then( m => m.LoginPage)
   },
 
 ];

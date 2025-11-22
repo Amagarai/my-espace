@@ -1,0 +1,273 @@
+.login-content {
+  --background: #f5f5f5;
+}
+
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+}
+
+.login-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 450px;
+  overflow: hidden;
+}
+
+// Logo Section
+.logo-section {
+  background: linear-gradient(135deg, #96a896 0%, #b8c8b8 100%);
+  padding: 40px 20px;
+  text-align: center;
+  color: white;
+}
+
+.logo-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+
+  ion-icon {
+    font-size: 32px;
+    color: white;
+  }
+}
+
+.app-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: white;
+}
+
+.app-subtitle {
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.95;
+  color: white;
+  font-weight: 400;
+}
+
+// Form Section
+.form-section {
+  padding: 32px 24px;
+}
+
+.form-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 8px 0;
+  text-align: center;
+}
+
+.form-subtitle {
+  font-size: 14px;
+  color: #8c8c8c;
+  margin: 0 0 24px 0;
+  text-align: center;
+  font-weight: 400;
+}
+
+// Error Message
+.error-message {
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #c33;
+  font-size: 14px;
+
+  ion-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  span {
+    flex: 1;
+  }
+}
+
+// Form
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+  }
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  font-size: 20px;
+  color: #8c8c8c;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.form-input {
+  width: 100%;
+  padding: 14px 14px 14px 46px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 16px;
+  color: #1a1a1a;
+  background: white;
+  transition: all 0.2s ease;
+  font-family: inherit;
+
+  &:focus {
+    outline: none;
+    border-color: #96a896;
+    box-shadow: 0 0 0 3px rgba(150, 168, 150, 0.1);
+  }
+
+  &::placeholder {
+    color: #999999;
+  }
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: #8c8c8c;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #96a896;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  ion-icon {
+    pointer-events: none;
+  }
+}
+
+.form-options {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -8px;
+}
+
+.forgot-password {
+  background: transparent;
+  border: none;
+  color: #96a896;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: color 0.2s ease;
+  font-weight: 500;
+
+  &:hover {
+    color: #7a927a;
+    text-decoration: underline;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.login-button {
+  --background: linear-gradient(135deg, #96a896 0%, #b8c8b8 100%);
+  --background-hover: linear-gradient(135deg, #7a927a 0%, #a8b8a8 100%);
+  --background-activated: linear-gradient(135deg, #6a826a 0%, #98a898 100%);
+  --color: white;
+  --border-radius: 12px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  --padding-start: 24px;
+  --padding-end: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 8px;
+  height: 50px;
+  box-shadow: 0 2px 10px rgba(150, 168, 150, 0.3);
+
+  &::part(native) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  ion-icon {
+    font-size: 20px;
+  }
+
+  &[disabled] {
+    --background: #cccccc;
+    --background-hover: #cccccc;
+    opacity: 0.7;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    padding: 16px;
+  }
+
+  .login-card {
+    border-radius: 16px;
+  }
+
+  .logo-section {
+    padding: 32px 20px;
+  }
+
+  .form-section {
+    padding: 28px 20px;
+  }
+
+  .app-title {
+    font-size: 24px;
+  }
+
+  .form-title {
+    font-size: 20px;
+  }
+}
+

@@ -6,8 +6,8 @@
         <ion-icon name="logo"></ion-icon>
       </div>
       <div class="greeting">
-        <h1>Bonjour Emma</h1>
-        <p>Lundi 18 Mars</p>
+        <h1>Bonjour {{ studentName }}</h1>
+        <p>{{ todayDate }}</p>
       </div>
     </div>
     <div class="header-right">
@@ -15,11 +15,46 @@
         <ion-icon name="notifications-outline"></ion-icon>
       </div>
       <div class="profile-picture">
-        <img src="https://i.pravatar.cc/150?img=12" alt="Profile" />
+        <span class="profile-initials">{{ studentInitials }}</span>
       </div>
     </div>
   </div>
 
+  <!-- Announcements Section -->
+  <div class="announcements-section">
+    @if (alertes.length > 0) {
+      <div class="announcements-swiper"
+           (touchstart)="onSwipeStart($event)"
+           (touchmove)="onSwipeMove($event)"
+           (touchend)="onSwipeEnd()">
+        <div class="announcements-track" [style.transform]="'translateX(-' + (currentAlerteIndex * 100) + '%)'">
+          @for (alerte of alertes; track alerte.localId) {
+            <div class="announcement-card" [class]="getAlerteTypeClass(alerte.annonceType)">
+              <div class="announcement-icon" [class]="getAlerteIconClass(alerte.annonceType)">
+                <ion-icon [name]="getAlerteIcon(alerte.annonceType)"></ion-icon>
+              </div>
+              <div class="announcement-content">
+                <h4>{{ alerte.annonceTitre || alerte.title }}</h4>
+                <p>{{ alerte.annonceContenu || alerte.description }}</p>
+                <span class="announcement-type">{{ alerte.annonceType || 'Info' }}</span>
+              </div>
+            </div>
+          }
+        </div>
+        @if (alertes.length > 1) {
+          <div class="announcements-indicators">
+            @for (alerte of alertes; track alerte.localId; let i = $index) {
+              <span class="indicator" [class.active]="i === currentAlerteIndex" (click)="goToAlerte(i)"></span>
+            }
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="no-announcements">
+        <p>Aucune annonce pour le moment</p>
+      </div>
+    }
+  </div>
 
   <div class="summary-cards">
     <div class="summary-card courses-card">
@@ -28,7 +63,7 @@
         <span class="card-label">Cours</span>
       </div>
       <div class="card-content">
-        <div class="card-number">4</div>
+        <div class="card-number">{{ nombreCoursAujourdHui }}</div>
         <div class="card-subtitle">aujourd'hui</div>
       </div>
     </div>
@@ -38,7 +73,7 @@
         <span class="card-label">Notes</span>
       </div>
       <div class="card-content">
-        <div class="card-number">15.2</div>
+        <div class="card-number">{{ moyenneGenerale.toFixed(1) }}</div>
         <div class="card-subtitle">moyenne</div>
       </div>
     </div>
@@ -51,41 +86,34 @@
       <span class="see-all">Voir tout</span>
     </div>
     <div class="schedule-list">
-      <div class="schedule-card biology">
-        <div class="schedule-left">
-          <div class="schedule-icon green">
-            <ion-icon name="flask"></ion-icon>
+      @if (coursAujourdHui.length > 0) {
+        @for (cours of coursAujourdHui; track cours.localId) {
+          <div class="schedule-card" [class]="getCoursClass($index)">
+            <div class="schedule-left">
+              <div class="schedule-icon" [class]="getIconClass($index)">
+                <ion-icon [name]="getCoursIcon(cours.matiereName)"></ion-icon>
+              </div>
+              <div class="schedule-info">
+                <h4>{{ cours.matiereName }}</h4>
+                <p>{{ cours.salleName }}</p>
+              </div>
+            </div>
+            <div class="schedule-right">
+              <div class="schedule-time" [class]="getTimeClass($index)">{{ cours.heureDebut }}</div>
+              <div class="schedule-duration">{{ calculerDuree(cours.heureDebut, cours.heureFin) }}</div>
+            </div>
           </div>
-          <div class="schedule-info">
-            <h4>Biologie</h4>
-            <p>Salle A204</p>
-          </div>
+        }
+      } @else {
+        <div class="no-courses">
+          <p>Aucun cours aujourd'hui</p>
         </div>
-        <div class="schedule-right">
-          <div class="schedule-time green">9:00</div>
-          <div class="schedule-duration">2h</div>
-        </div>
-      </div>
-      <div class="schedule-card mathematics">
-        <div class="schedule-left">
-          <div class="schedule-icon orange">
-            <ion-icon name="calculator"></ion-icon>
-          </div>
-          <div class="schedule-info">
-            <h4>Mathématiques</h4>
-            <p>Salle B101</p>
-          </div>
-        </div>
-        <div class="schedule-right">
-          <div class="schedule-time orange">14:00</div>
-          <div class="schedule-duration">1h30</div>
-        </div>
-      </div>
+      }
     </div>
   </div>
 
   <!-- My Courses Section -->
-  <div class="section">
+  <!-- <div class="section">
     <div class="section-header">
       <h2>Mes cours</h2>
       <span class="see-all">Voir tout</span>
@@ -118,7 +146,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 
   <!-- Recent Notes Section -->
   <div class="section">
@@ -127,44 +155,27 @@
       <span class="see-all">Voir tout</span>
     </div>
     <div class="notes-list">
-      <div class="note-item">
-        <div class="note-icon green">
-          <span>A</span>
+      @if (recentNotes.length > 0) {
+        @for (note of recentNotes; track note.localId) {
+          <div class="note-item">
+            <div class="note-icon" [class]="getNoteIconClass($index)">
+              <span>{{ getNoteInitial(note.matiereName) }}</span>
+            </div>
+            <div class="note-content">
+              <h4>{{ note.type }} - {{ note.matiereName }}</h4>
+              <p>{{ formatDate(note.date) }}</p>
+            </div>
+            <div class="note-score" [class]="getNoteBadgeClass(note.note)">
+              {{ note.note }}/20
+            </div>
+          </div>
+        }
+      } @else {
+        <div class="no-notes">
+          <p>Aucune note récente</p>
         </div>
-        <div class="note-content">
-          <h4>Contrôle Biologie</h4>
-          <p>15 Mars 2024</p>
-        </div>
-        <div class="note-score green-badge">16/20</div>
-      </div>
-      <div class="note-item">
-        <div class="note-icon orange">
-          <span>B</span>
-        </div>
-        <div class="note-content">
-          <h4>Devoir Maths</h4>
-          <p>12 Mars 2024</p>
-        </div>
-        <div class="note-score orange-badge">14/20</div>
-      </div>
+      }
     </div>
   </div>
 
-  <!-- Announcements Section -->
-  <div class="section">
-    <div class="section-header">
-      <h2>Annonces</h2>
-      <span class="see-all">Voir tout</span>
-    </div>
-    <div class="announcement-card">
-      <div class="announcement-icon">
-        <ion-icon name="megaphone-outline"></ion-icon>
-      </div>
-      <div class="announcement-content">
-        <h4>Vacances de Printemps</h4>
-        <p>Les cours reprendront le 8 avril. Bonnes vacances à tous !</p>
-        <span class="announcement-time">Il y a 2 heures</span>
-      </div>
-    </div>
-  </div>
 </ion-content>

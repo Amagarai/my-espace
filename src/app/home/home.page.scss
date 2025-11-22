@@ -147,11 +147,182 @@
   height: 40px;
   border-radius: 50%;
   overflow: hidden;
+  background: linear-gradient(135deg, #96a896 0%, #b8c8b8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  .profile-initials {
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+  }
+}
+
+// Announcements Section
+.announcements-section {
+  margin-top: 100px;
+  margin-bottom: 20px;
+}
+
+.announcements-swiper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+.announcements-track {
+  display: flex;
+  transition: transform 0.3s ease;
+  width: 100%;
+}
+
+.announcement-card {
+  min-width: 100%;
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid;
+
+  &.examen {
+    border-left-color: #e74c3c;
+    background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+  }
+
+  &.session {
+    border-left-color: #f39c12;
+    background: linear-gradient(135deg, #fffbf0 0%, #ffffff 100%);
+  }
+
+  &.info {
+    border-left-color: #3498db;
+    background: linear-gradient(135deg, #f0f8ff 0%, #ffffff 100%);
+  }
+}
+
+.announcement-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 24px;
+  }
+
+  &.examen {
+    background: #fee;
+    ion-icon {
+      color: #e74c3c;
+    }
+  }
+
+  &.session {
+    background: #fff3e0;
+    ion-icon {
+      color: #f39c12;
+    }
+  }
+
+  &.info {
+    background: #e3f2fd;
+    ion-icon {
+      color: #3498db;
+    }
+  }
+}
+
+.announcement-content {
+  flex: 1;
+  min-width: 0;
+
+  h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 8px 0;
+  }
+
+  p {
+    font-size: 14px;
+    color: #666666;
+    margin: 0 0 10px 0;
+    line-height: 1.5;
+  }
+
+  .announcement-type {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.announcement-card.examen .announcement-type {
+  background: #fee;
+  color: #e74c3c;
+}
+
+.announcement-card.session .announcement-type {
+  background: #fff3e0;
+  color: #f39c12;
+}
+
+.announcement-card.info .announcement-type {
+  background: #e3f2fd;
+  color: #3498db;
+}
+
+.announcements-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+
+  .indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &.active {
+      background: #96a896;
+      width: 24px;
+      border-radius: 4px;
+    }
+  }
+}
+
+.no-announcements {
+  background: white;
+  border-radius: 20px;
+  padding: 40px 20px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+
+  p {
+    font-size: 14px;
+    color: #8c8c8c;
+    margin: 0;
   }
 }
 
@@ -160,7 +331,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
-  margin-top: 100px;
+  margin-top: 20px;
 }
 
 .summary-card {
@@ -351,6 +522,20 @@
   color: #8c8c8c;
 }
 
+.no-courses {
+  background: white;
+  border-radius: 16px;
+  padding: 40px 18px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+
+  p {
+    font-size: 14px;
+    color: #8c8c8c;
+    margin: 0;
+  }
+}
+
 // My Courses Section
 .courses-grid {
   display: grid;
@@ -499,6 +684,25 @@
   &.orange-badge {
     background: #fff3e0;
     color: #d4a574;
+  }
+
+  &.red-badge {
+    background: #fee;
+    color: #e74c3c;
+  }
+}
+
+.no-notes {
+  background: white;
+  border-radius: 16px;
+  padding: 40px 18px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+
+  p {
+    font-size: 14px;
+    color: #8c8c8c;
+    margin: 0;
   }
 }
 
