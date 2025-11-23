@@ -1,303 +1,218 @@
 .planing-content {
-  --background: #f5f5f5;
-  padding: 20px 16px 100px 16px;
+  --background: #ffffff;
+  padding: 0;
 }
 
-// Page Header
-.page-header {
-  margin-bottom: 24px;
-  padding-top: 10px;
-
-  h1 {
-    font-size: 28px;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin: 0 0 6px 0;
-  }
-
-  p {
-    font-size: 14px;
-    color: #8c8c8c;
-    margin: 0;
-  }
-}
-
-// Week Selector
-.week-selector {
+// Top Day Navigation
+.day-navigation {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  padding: 33px 16px 16px 16px;
+  gap: 16px;
   background: white;
-  border-radius: 16px;
-  padding: 16px 20px;
-  margin-bottom: 24px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid #f0f0f0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-.week-nav-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+.nav-chevron {
+  width: 32px;
+  height: 32px;
   border: none;
-  background: #f5f5f5;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  padding: 0;
 
   ion-icon {
-    font-size: 20px;
+    font-size: 24px;
     color: #1a1a1a;
   }
 
-  &:hover {
-    background: #e8e8e8;
+  &:active {
+    opacity: 0.6;
   }
 }
 
-.current-week {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-
-  .week-label {
-    font-size: 12px;
-    color: #8c8c8c;
-  }
-
-  .week-date {
-    font-size: 16px;
-    font-weight: 600;
-    color: #1a1a1a;
-  }
-}
-
-// Today Section
-.today-section {
-  margin-bottom: 28px;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-
-  h2 {
-    font-size: 19px;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin: 0;
-    font-style: italic;
-  }
-
-  .today-date {
-    font-size: 13px;
-    color: #8c8c8c;
-    text-transform: capitalize;
-  }
-}
-
-.today-courses {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.today-course-card {
-  background: white;
-  border-radius: 16px;
-  padding: 18px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-  border-left: 4px solid;
-  transition: all 0.2s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  }
-}
-
-.course-time {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 60px;
-
-  .time-start {
-    font-size: 18px;
-    font-weight: 700;
-    color: #1a1a1a;
-  }
-
-  .time-end {
-    font-size: 13px;
-    color: #8c8c8c;
-  }
-}
-
-.course-info {
+.current-day {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+  text-align: center;
   flex: 1;
-  min-width: 0;
-
-  h4 {
-    font-size: 16px;
-    font-weight: 600;
-    color: #1a1a1a;
-    margin: 0 0 4px 0;
-  }
-
-  p {
-    font-size: 13px;
-    color: #8c8c8c;
-    margin: 0;
-  }
 }
 
-.course-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+// Today Button
+.today-button-container {
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  background: white;
+}
+
+.today-button {
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  ion-icon {
-    font-size: 22px;
-  }
-}
-
-.no-courses {
-  background: white;
-  border-radius: 16px;
-  padding: 40px 20px;
-  text-align: center;
-
-  p {
-    font-size: 14px;
-    color: #8c8c8c;
-    margin: 0;
-  }
-}
-
-// Weekly Section
-.weekly-section {
-  margin-bottom: 24px;
-}
-
-.schedule-container {
-  background: white;
-  border-radius: 16px;
-  padding: 18px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-  overflow-x: auto;
-}
-
-.schedule-days {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 12px;
-  min-width: 800px;
-}
-
-.day-column {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.day-header {
-  text-align: center;
-  margin-bottom: 12px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid #f0f0f0;
-
-  h3 {
-    font-size: 14px;
-    font-weight: 600;
-    color: #1a1a1a;
-    margin: 0 0 4px 0;
-  }
-
-  .day-date {
-    font-size: 12px;
-    color: #8c8c8c;
-  }
-}
-
-.day-courses {
-  display: flex;
-  flex-direction: column;
   gap: 8px;
-  min-height: 200px;
-}
-
-.course-item {
-  background: #f8f9f8;
-  border-radius: 12px;
-  padding: 12px;
-  border-left: 3px solid;
+  padding: 10px 20px;
+  border: 1.5px solid #96a896;
+  border-radius: 20px;
+  background: white;
+  color: #96a896;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
   transition: all 0.2s ease;
 
-  &:hover {
-    background: #f0f0f0;
-    transform: translateX(2px);
+  ion-icon {
+    font-size: 18px;
+  }
+
+  &:active {
+    background: #f0f8ff;
   }
 }
 
-.course-time-small {
-  margin-bottom: 6px;
+// Day Selection Tabs
+.days-tabs-container {
+  padding: 0 16px 16px;
+  background: white;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 
-  span {
-    font-size: 12px;
-    font-weight: 600;
-    color: #1a1a1a;
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
 
-.course-details {
-  h5 {
-    font-size: 13px;
-    font-weight: 600;
+.days-tabs {
+  display: flex;
+  gap: 8px;
+  min-width: fit-content;
+}
+
+.day-tab {
+  padding: 10px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: white;
+  color: #1a1a1a;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &.active {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+  }
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+// Schedule List
+.schedule-list-container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #f5f5f5;
+  min-height: calc(100vh - 250px);
+}
+
+.schedule-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.course-subject {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 16px 0;
+}
+
+.course-details-row {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 12px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  flex-wrap: wrap;
+
+  ion-icon {
+    font-size: 18px;
+    color: #8c8c8c;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .course-time {
+    font-size: 14px;
     color: #1a1a1a;
-    margin: 0 0 4px 0;
+    font-weight: 400;
   }
 
   .course-room {
-    font-size: 11px;
+    font-size: 14px;
     color: #8c8c8c;
-    margin: 0 0 2px 0;
+    margin-left: 4px;
   }
 
-  .course-duration {
-    font-size: 11px;
-    color: #8c8c8c;
-    margin: 0;
+  .course-prof {
+    font-size: 14px;
+    color: #1a1a1a;
+    font-weight: 400;
   }
 }
 
-.empty-day {
+.no-courses-message {
   text-align: center;
-  padding: 20px 10px;
+  padding: 60px 20px;
   color: #8c8c8c;
-  font-size: 12px;
+  font-size: 14px;
 }
 
-// Responsive
-@media (max-width: 768px) {
-  .schedule-days {
-    grid-template-columns: 1fr;
-    min-width: 100%;
-  }
-
-  .day-courses {
-    min-height: auto;
-  }
+// Loading Skeleton
+.skeleton-schedule {
+  min-height: 120px;
 }
 
+.skeleton-content {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

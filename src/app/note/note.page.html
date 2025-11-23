@@ -12,7 +12,7 @@
         <ion-icon name="star"></ion-icon>
       </div>
       <div class="stat-info">
-        <div class="stat-value">15.2</div>
+        <div class="stat-value">{{ isLoadingNotes ? '...' : moyenneGenerale.toFixed(1) }}</div>
         <div class="stat-label">Moyenne générale</div>
       </div>
     </div>
@@ -21,7 +21,7 @@
         <ion-icon name="document-text"></ion-icon>
       </div>
       <div class="stat-info">
-        <div class="stat-value">12</div>
+        <div class="stat-value">{{ isLoadingNotes ? '...' : totalNotes }}</div>
         <div class="stat-label">Notes enregistrées</div>
       </div>
     </div>
@@ -30,52 +30,114 @@
   <!-- Filter Section -->
   <div class="filter-section">
     <div class="filter-buttons">
-      <button class="filter-btn" [class.active]="selectedFilter === 'all'" (click)="selectedFilter = 'all'">
-        Toutes
+      <button class="filter-btn" [class.active]="selectedFilter === 'notes'" (click)="selectFilter('notes')">
+        Notes
       </button>
-      <button class="filter-btn" [class.active]="selectedFilter === 'recent'" (click)="selectedFilter = 'recent'">
-        Récentes
-      </button>
-      <button class="filter-btn" [class.active]="selectedFilter === 'best'" (click)="selectedFilter = 'best'">
-        Meilleures
+      <button class="filter-btn" [class.active]="selectedFilter === 'relevers'" (click)="selectFilter('relevers')">
+        Relevés
       </button>
     </div>
   </div>
 
   <!-- Notes by Subject -->
-  <div class="subjects-section">
-    @for (subject of filteredSubjects; track subject.name) {
-      <div class="subject-group">
-        <div class="subject-header">
-          <div class="subject-icon" [style.background]="subject.color">
-            <ion-icon [name]="subject.icon"></ion-icon>
+  @if (selectedFilter === 'notes') {
+    <div class="subjects-section">
+      @if (isLoadingNotes) {
+        @for (item of [1, 2, 3]; track item) {
+          <div class="subject-group skeleton-subject">
+            <div class="skeleton-content"></div>
           </div>
-          <div class="subject-info">
-            <h3>{{ subject.name }}</h3>
-            <p>Moyenne: {{ subject.average }}/20</p>
-          </div>
-        </div>
-        <div class="notes-list">
-          @for (note of subject.notes; track note.id) {
-            <div class="note-card">
-              <div class="note-left">
-                <div class="note-grade" [class]="getGradeClass(note.score)">
-                  <span>{{ getGradeLetter(note.score) }}</span>
-                </div>
-                <div class="note-details">
-                  <h4>{{ note.title }}</h4>
-                  <p>{{ note.date }}</p>
-                </div>
+        }
+      } @else if (subjects.length > 0) {
+        @for (subject of subjects; track subject.name) {
+          <div class="subject-group">
+            <div class="subject-header">
+              <div class="subject-icon" [style.background]="subject.color">
+                <ion-icon [name]="subject.icon"></ion-icon>
               </div>
-              <div class="note-right">
-                <div class="note-score" [class]="getScoreClass(note.score)">
-                  {{ note.score }}/20
-                </div>
+              <div class="subject-info">
+                <h3>{{ subject.name }}</h3>
+                <p>Moyenne: {{ subject.average.toFixed(2) }}/20</p>
               </div>
             </div>
-          }
+            <div class="notes-list">
+              @for (note of subject.notes; track note.id) {
+                <div class="note-card">
+                  <div class="note-left">
+                    <div class="note-grade" [class]="getGradeClass(note.score)">
+                      <span>{{ getGradeLetter(note.score) }}</span>
+                    </div>
+                    <div class="note-details">
+                      <h4>{{ note.title }}</h4>
+                      <p>{{ note.date }}</p>
+                    </div>
+                  </div>
+                  <div class="note-right">
+                    <div class="note-score" [class]="getScoreClass(note.score)">
+                      {{ note.score }}/20
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      } @else {
+        <div class="no-notes">
+          <p>Aucune note disponible</p>
         </div>
-      </div>
-    }
-  </div>
+      }
+    </div>
+  }
+
+  <!-- Relevers Section -->
+  @if (selectedFilter === 'relevers') {
+    <div class="relevers-section">
+      @if (isLoadingRelevers) {
+        @for (item of [1, 2, 3]; track item) {
+          <div class="relever-card skeleton-relever">
+            <div class="skeleton-content"></div>
+          </div>
+        }
+      } @else if (relevers.length > 0) {
+        @for (relever of relevers; track relever.localId) {
+          <div class="relever-card" [class.validated]="relever.valider">
+            <div class="relever-header">
+              <div class="relever-icon" [style.background]="getSubjectColor(relever.matiereName)">
+                <ion-icon [name]="getSubjectIcon(relever.matiereName)"></ion-icon>
+              </div>
+              <div class="relever-info">
+                <h3>{{ relever.matiereName }}</h3>
+                @if (relever.valider) {
+                  <span class="validated-badge">Validé</span>
+                } @else {
+                  <span class="pending-badge">En attente</span>
+                }
+              </div>
+            </div>
+            <div class="relever-scores">
+              <div class="score-item">
+                <span class="score-label">Devoir</span>
+                <span class="score-value">{{ relever.devoir ? relever.devoir.toFixed(2) : '-' }}/20</span>
+              </div>
+              <div class="score-item">
+                <span class="score-label">Examen</span>
+                <span class="score-value">{{ relever.examen ? relever.examen.toFixed(2) : '-' }}/20</span>
+              </div>
+              <div class="score-item average-item">
+                <span class="score-label">Moyenne</span>
+                <span class="score-value" [class]="getScoreClassForRelever(relever.moyenne)">
+                  {{ relever.moyenne ? relever.moyenne.toFixed(2) : '-' }}/20
+                </span>
+              </div>
+            </div>
+          </div>
+        }
+      } @else {
+        <div class="no-notes">
+          <p>Aucun relevé disponible</p>
+        </div>
+      }
+    </div>
+  }
 </ion-content>

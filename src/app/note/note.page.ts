@@ -12,12 +12,16 @@ import {
   book,
   school
 } from 'ionicons/icons';
+import { StudentService, NotesGroupesParMatiereDTO, NoteEtudiantDTO, ReleverEtudiantDTO } from '../services/student.service';
 
 interface Note {
   id: string;
+  localId?: string;
   title: string;
   date: string;
   score: number;
+  type?: string;
+  valider?: boolean;
 }
 
 interface Subject {
@@ -36,90 +40,151 @@ interface Subject {
   imports: [IonContent, IonIcon, CommonModule, FormsModule]
 })
 export class NotePage implements OnInit {
-  selectedFilter: string = 'all';
+  selectedFilter: string = 'notes';
+  subjects: Subject[] = [];
+  relevers: ReleverEtudiantDTO[] = [];
+  isLoadingNotes: boolean = false;
+  isLoadingRelevers: boolean = false;
+  studentLocalId: string = '';
+  moyenneGenerale: number = 0;
+  totalNotes: number = 0;
 
-  subjects: Subject[] = [
-    {
-      name: 'Chimie',
-      icon: 'flask',
-      color: '#96a896',
-      average: 16.5,
-      notes: [
-        { id: '1', title: 'Contrôle Chimie Organique', date: '15 Mars 2024', score: 18 },
-        { id: '2', title: 'Devoir Maison', date: '10 Mars 2024', score: 15 },
-        { id: '3', title: 'TP Chimie', date: '5 Mars 2024', score: 16.5 }
-      ]
-    },
-    {
-      name: 'Mathématiques',
-      icon: 'calculator',
-      color: '#d4a574',
-      average: 14.2,
-      notes: [
-        { id: '4', title: 'Devoir Maths', date: '12 Mars 2024', score: 14 },
-        { id: '5', title: 'Contrôle Algèbre', date: '8 Mars 2024', score: 15.5 },
-        { id: '6', title: 'Interrogation', date: '3 Mars 2024', score: 13 }
-      ]
-    },
-    {
-      name: 'Biologie',
-      icon: 'flask',
-      color: '#96a896',
-      average: 16.0,
-      notes: [
-        { id: '7', title: 'Contrôle Biologie', date: '15 Mars 2024', score: 16 },
-        { id: '8', title: 'TP Biologie', date: '11 Mars 2024', score: 17 },
-        { id: '9', title: 'Devoir', date: '6 Mars 2024', score: 15 }
-      ]
-    },
-    {
-      name: 'Géographie',
-      icon: 'globe',
-      color: '#d4a574',
-      average: 15.8,
-      notes: [
-        { id: '10', title: 'Exposé Géographie', date: '14 Mars 2024', score: 16 },
-        { id: '11', title: 'Contrôle', date: '9 Mars 2024', score: 15.5 }
-      ]
-    }
-  ];
-
-  constructor() {
-    addIcons({
-      'star': star,
-      'document-text': documentText,
-      'flask': flask,
-      'calculator': calculator,
-      'globe': globe,
-      'book': book,
-      'school': school
-    });
+  constructor(private studentService: StudentService) {
+    addIcons({star,documentText,flask,calculator,globe,book,school});
   }
 
   ngOnInit() {
+    // Récupérer l'ID de l'étudiant depuis localStorage
+    const studentDetailStr = localStorage.getItem('studentDetail');
+    if (studentDetailStr) {
+      try {
+        const studentDetail = JSON.parse(studentDetailStr);
+        if (studentDetail.isLoggedIn && studentDetail.localId) {
+          this.studentLocalId = studentDetail.localId;
+          this.loadNotes();
+        }
+      } catch (error) {
+        console.error('Erreur lors de la lecture des données de session:', error);
+      }
+    }
   }
 
-  get filteredSubjects(): Subject[] {
-    let filtered = [...this.subjects];
-    
-    if (this.selectedFilter === 'recent') {
-      // Trier par date la plus récente
-      filtered = filtered.map(subject => ({
-        ...subject,
-        notes: [...subject.notes].sort((a, b) => 
-          new Date(b.date).getTime() - new Date(a.date).getTime()
-        )
-      }));
-    } else if (this.selectedFilter === 'best') {
-      // Trier par meilleures notes
-      filtered = filtered.map(subject => ({
-        ...subject,
-        notes: [...subject.notes].sort((a, b) => b.score - a.score)
-      }));
+  selectFilter(filter: string) {
+    this.selectedFilter = filter;
+    if (filter === 'relevers' && this.relevers.length === 0) {
+      this.loadRelevers();
     }
-    
-    return filtered;
   }
+
+  loadRelevers() {
+    if (!this.studentLocalId) return;
+
+    this.isLoadingRelevers = true;
+    this.studentService.getRelevers(this.studentLocalId).subscribe({
+      next: (data) => {
+        this.relevers = data || [];
+        this.isLoadingRelevers = false;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des relevés:', error);
+        this.isLoadingRelevers = false;
+      }
+    });
+  }
+
+  loadNotes() {
+    if (!this.studentLocalId) return;
+
+    this.isLoadingNotes = true;
+    this.studentService.getNotesGroupesParMatiere(this.studentLocalId).subscribe({
+      next: (data) => {
+        this.subjects = this.convertToSubjects(data);
+        this.calculateStatistics();
+        this.isLoadingNotes = false;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des notes:', error);
+        this.isLoadingNotes = false;
+      }
+    });
+  }
+
+  convertToSubjects(data: NotesGroupesParMatiereDTO[]): Subject[] {
+    return data.map(matiere => {
+      const notes: Note[] = matiere.notes.map(note => ({
+        id: note.localId,
+        localId: note.localId,
+        title: this.getNoteTitle(note.type || 'Note'),
+        date: this.formatDate(note.date),
+        score: note.note ? Number(note.note) : 0,
+        type: note.type,
+        valider: note.valider
+      }));
+
+      return {
+        name: matiere.matiereName,
+        icon: this.getSubjectIcon(matiere.matiereName),
+        color: this.getSubjectColor(matiere.matiereName),
+        average: matiere.moyenne ? Number(matiere.moyenne) : 0,
+        notes: notes
+      };
+    });
+  }
+
+  getNoteTitle(type: string): string {
+    const titles: { [key: string]: string } = {
+      'Devoir': 'Devoir',
+      'Contrôle': 'Contrôle',
+      'Examen': 'Examen',
+      'TP': 'Travaux Pratiques',
+      'Interrogation': 'Interrogation',
+      'Exposé': 'Exposé'
+    };
+    return titles[type] || type || 'Note';
+  }
+
+  getSubjectIcon(matiereName: string): string {
+    const name = matiereName.toLowerCase();
+    if (name.includes('math')) return 'calculator';
+    if (name.includes('chimie') || name.includes('bio')) return 'flask';
+    if (name.includes('geo')) return 'globe';
+    if (name.includes('français') || name.includes('francais') || name.includes('littérature')) return 'book';
+    return 'school';
+  }
+
+  getSubjectColor(matiereName: string): string {
+    const name = matiereName.toLowerCase();
+    if (name.includes('math')) return '#d4a574';
+    if (name.includes('chimie') || name.includes('bio')) return '#96a896';
+    if (name.includes('geo')) return '#d4a574';
+    return '#96a896';
+  }
+
+  formatDate(dateString: string | null | undefined): string {
+    if (!dateString) return 'Date inconnue';
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+  }
+
+  calculateStatistics() {
+    // Calculer la moyenne générale
+    if (this.subjects.length === 0) {
+      this.moyenneGenerale = 0;
+      this.totalNotes = 0;
+      return;
+    }
+
+    const totalMoyennes = this.subjects.reduce((sum, subject) => sum + subject.average, 0);
+    this.moyenneGenerale = totalMoyennes / this.subjects.length;
+
+    // Calculer le total de notes
+    this.totalNotes = this.subjects.reduce((sum, subject) => sum + subject.notes.length, 0);
+  }
+
 
   getGradeLetter(score: number): string {
     if (score >= 18) return 'A+';
@@ -142,5 +207,11 @@ export class NotePage implements OnInit {
     if (score >= 14) return 'orange-badge';
     if (score >= 12) return 'yellow-badge';
     return 'red-badge';
+  }
+
+  getScoreClassForRelever(moyenne: number | null | undefined): string {
+    if (!moyenne) return 'red-badge';
+    const score = Number(moyenne);
+    return this.getScoreClass(score);
   }
 }

@@ -1,90 +1,68 @@
-<ion-content [fullscreen]="true" class="planing-content ion-padding">
-  <!-- Header Section -->
-  <div class="page-header">
-    <h1>Mon Planning</h1>
-    <p>Votre emploi du temps de la semaine</p>
-  </div>
-
-  <!-- Week Selector -->
-  <div class="week-selector">
-    <button class="week-nav-btn" (click)="previousWeek()">
+<ion-content [fullscreen]="true" class="planing-content">
+  <!-- Top Navigation -->
+  <div class="day-navigation">
+    <button class="nav-chevron" (click)="previousDay()">
       <ion-icon name="chevron-back"></ion-icon>
     </button>
-    <div class="current-week">
-      <span class="week-label">Semaine du</span>
-      <span class="week-date">{{ currentWeekStart | date:'d MMM' }} - {{ currentWeekEnd | date:'d MMM yyyy' }}</span>
-    </div>
-    <button class="week-nav-btn" (click)="nextWeek()">
+    <h1 class="current-day">{{ getCurrentDayName() }}</h1>
+    <button class="nav-chevron" (click)="nextDay()">
       <ion-icon name="chevron-forward"></ion-icon>
     </button>
   </div>
 
-  <!-- Today's Schedule (Quick View) -->
-  <div class="today-section">
-    <div class="section-header">
-      <h2>Aujourd'hui</h2>
-      <span class="today-date">{{ today | date:'EEEE d MMMM' }}</span>
-    </div>
-    @if (todayCourses.length > 0) {
-      <div class="today-courses">
-        @for (course of todayCourses; track course.id) {
-          <div class="today-course-card" [style.border-left-color]="course.color">
-            <div class="course-time">
-              <span class="time-start">{{ course.startTime }}</span>
-              <span class="time-end">{{ course.endTime }}</span>
-            </div>
-            <div class="course-info">
-              <h4>{{ course.subject }}</h4>
-              <p>{{ course.room }}</p>
-            </div>
-            <div class="course-icon" [style.background]="course.color + '20'">
-              <ion-icon [name]="course.icon" [style.color]="course.color"></ion-icon>
-            </div>
-          </div>
-        }
-      </div>
-    } @else {
-      <div class="no-courses">
-        <p>Aucun cours aujourd'hui</p>
-      </div>
-    }
+  <!-- Aujourd'hui Button -->
+  <div class="today-button-container">
+    <button class="today-button" (click)="goToToday()">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <span>Aujourd'hui</span>
+    </button>
   </div>
 
-  <!-- Weekly Schedule -->
-  <div class="weekly-section">
-    <div class="section-header">
-      <h2>Semaine</h2>
+  <!-- Day Selection Tabs -->
+  <div class="days-tabs-container">
+    <div class="days-tabs">
+      @for (day of weekDaysShort; track day.name) {
+        <button
+          class="day-tab"
+          [class.active]="selectedDay === day.name"
+          (click)="selectDay(day.name)">
+          {{ day.shortName }}
+        </button>
+      }
     </div>
-    <div class="schedule-container">
-      <div class="schedule-days">
-        @for (day of weekDays; track day.name) {
-          <div class="day-column">
-            <div class="day-header">
-              <h3>{{ day.name }}</h3>
-              <span class="day-date">{{ day.date | date:'d MMM' }}</span>
-            </div>
-            <div class="day-courses">
-              @for (course of getCoursesForDay(day.name); track course.id) {
-                <div class="course-item" [style.background]="course.color + '15'" [style.border-left-color]="course.color">
-                  <div class="course-time-small">
-                    <span>{{ course.startTime }}</span>
-                  </div>
-                  <div class="course-details">
-                    <h5>{{ course.subject }}</h5>
-                    <p class="course-room">{{ course.room }}</p>
-                    <p class="course-duration">{{ course.duration }}</p>
-                  </div>
-                </div>
-              }
-              @if (getCoursesForDay(day.name).length === 0) {
-                <div class="empty-day">
-                  <p>Aucun cours</p>
-                </div>
-              }
+  </div>
+
+  <!-- Schedule List -->
+  <div class="schedule-list-container">
+    @if (isLoadingCourses) {
+      @for (item of [1, 2]; track item) {
+        <div class="schedule-card skeleton-schedule">
+          <div class="skeleton-content"></div>
+        </div>
+      }
+    } @else if (getCoursesForSelectedDay().length > 0) {
+      @for (course of getCoursesForSelectedDay(); track course.localId || course.id) {
+        <div class="schedule-card">
+          <h3 class="course-subject">{{ course.matiereName || course.subject }}</h3>
+          <div class="course-details-row">
+            <div class="detail-item">
+              <ion-icon name="book-outline"></ion-icon>
+              <span class="course-time">{{ course.heureDebut || course.startTime }} - {{ course.heureFin || course.endTime }}</span>
+              <span class="course-room">{{ course.salleName || course.room }}</span>
             </div>
           </div>
-        }
+          <div class="course-details-row">
+            <div class="detail-item">
+              <ion-icon name="person-outline"></ion-icon>
+              <span class="course-prof">{{ getProfName(course) }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    } @else {
+      <div class="no-courses-message">
+        <p>Aucun cours pour ce jour</p>
       </div>
-    </div>
+    }
   </div>
 </ion-content>

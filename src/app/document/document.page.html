@@ -22,8 +22,14 @@
 
   <!-- Courses List -->
   <div class="courses-section">
-    @if (filteredCourses.length > 0) {
-      @for (course of filteredCourses; track course.id) {
+    @if (isLoadingDocuments) {
+      @for (item of [1, 2, 3]; track item) {
+        <div class="course-card skeleton-course">
+          <div class="skeleton-content"></div>
+        </div>
+      }
+    } @else if (filteredCourses.length > 0) {
+      @for (course of filteredCourses; track course.localId || course.id) {
         <div class="course-card">
           <div class="course-header">
             <div class="course-icon" [style.background]="course.color">
@@ -48,7 +54,7 @@
                 <span>{{ course.documentsCount }} documents</span>
               </div>
             </div>
-            <div class="progress-section">
+            <!-- <div class="progress-section">
               <div class="progress-info">
                 <span>Progression</span>
                 <span class="progress-percent">{{ course.progress }}%</span>
@@ -56,7 +62,7 @@
               <div class="progress-bar">
                 <div class="progress-fill" [style.width.%]="course.progress" [style.background]="course.color"></div>
               </div>
-            </div>
+            </div> -->
           </div>
           <div class="course-actions">
             <button class="action-btn primary" (click)="openCourseDocuments(course.id)">

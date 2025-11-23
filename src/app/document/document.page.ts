@@ -17,19 +17,28 @@ import {
   globe,
   book,
   close,
-  documentText
+  documentText,
+  school
 } from 'ionicons/icons';
+import { StudentService, ProgrammeAvecDocumentsDTO, DocumentEtudiantDTO } from '../services/student.service';
+import { FileOpener, FileOpenerOptions } from '@capacitor-community/file-opener';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Capacitor } from '@capacitor/core';
+import { ToastController } from '@ionic/angular';
 
 interface Document {
   id: string;
+  localId: string;
   name: string;
   addedDate: string;
   addedDateObj: Date;
   courseId: string;
+  url?: string;
 }
 
 interface Course {
   id: string;
+  localId: string;
   name: string;
   professor: string;
   icon: string;
@@ -39,6 +48,7 @@ interface Course {
   documentsCount: number;
   progress: number;
   isFavorite: boolean;
+  documents?: Document[];
 }
 
 @Component({
@@ -46,154 +56,20 @@ interface Course {
   templateUrl: './document.page.html',
   styleUrls: ['./document.page.scss'],
   standalone: true,
-  imports: [IonContent, IonIcon, CommonModule, FormsModule]
+  imports: [IonContent, IonIcon, CommonModule, FormsModule],
+  providers: [ToastController]
 })
 export class DocumentPage implements OnInit {
   selectedFilter: string = 'all';
   selectedCourseId: string | null = null;
+  courses: Course[] = [];
+  isLoadingDocuments: boolean = false;
+  studentLocalId: string = '';
 
-  documents: Document[] = [
-    // Documents pour Chimie
-    { id: 'd1', name: 'Cours 1 - Introduction à la chimie organique.pdf', addedDate: '15 Mars 2024', addedDateObj: new Date('2024-03-15'), courseId: '1' },
-    { id: 'd2', name: 'TP Chimie - Réactions acido-basiques.pdf', addedDate: '12 Mars 2024', addedDateObj: new Date('2024-03-12'), courseId: '1' },
-    { id: 'd3', name: 'Devoir Maison - Chimie organique.pdf', addedDate: '10 Mars 2024', addedDateObj: new Date('2024-03-10'), courseId: '1' },
-    { id: 'd4', name: 'Cours 2 - Les alcools et éthers.pdf', addedDate: '8 Mars 2024', addedDateObj: new Date('2024-03-08'), courseId: '1' },
-    { id: 'd5', name: 'Résumé - Chimie organique.pdf', addedDate: '5 Mars 2024', addedDateObj: new Date('2024-03-05'), courseId: '1' },
-    { id: 'd6', name: 'Cours 3 - Les aldéhydes et cétones.pdf', addedDate: '3 Mars 2024', addedDateObj: new Date('2024-03-03'), courseId: '1' },
-    { id: 'd7', name: 'Exercices - Chimie organique.pdf', addedDate: '1 Mars 2024', addedDateObj: new Date('2024-03-01'), courseId: '1' },
-    { id: 'd8', name: 'Correction TP - Réactions.pdf', addedDate: '28 Février 2024', addedDateObj: new Date('2024-02-28'), courseId: '1' },
-    
-    // Documents pour Mathématiques
-    { id: 'd9', name: 'Cours 1 - Algèbre linéaire.pdf', addedDate: '14 Mars 2024', addedDateObj: new Date('2024-03-14'), courseId: '2' },
-    { id: 'd10', name: 'TD Mathématiques - Matrices.pdf', addedDate: '11 Mars 2024', addedDateObj: new Date('2024-03-11'), courseId: '2' },
-    { id: 'd11', name: 'Cours 2 - Calcul différentiel.pdf', addedDate: '9 Mars 2024', addedDateObj: new Date('2024-03-09'), courseId: '2' },
-    { id: 'd12', name: 'Exercices - Algèbre.pdf', addedDate: '7 Mars 2024', addedDateObj: new Date('2024-03-07'), courseId: '2' },
-    { id: 'd13', name: 'Cours 3 - Intégrales.pdf', addedDate: '5 Mars 2024', addedDateObj: new Date('2024-03-05'), courseId: '2' },
-    { id: 'd14', name: 'Devoir Maison - Mathématiques.pdf', addedDate: '4 Mars 2024', addedDateObj: new Date('2024-03-04'), courseId: '2' },
-    { id: 'd15', name: 'Correction TD - Matrices.pdf', addedDate: '2 Mars 2024', addedDateObj: new Date('2024-03-02'), courseId: '2' },
-    { id: 'd16', name: 'Cours 4 - Équations différentielles.pdf', addedDate: '28 Février 2024', addedDateObj: new Date('2024-02-28'), courseId: '2' },
-    { id: 'd17', name: 'Résumé - Algèbre linéaire.pdf', addedDate: '26 Février 2024', addedDateObj: new Date('2024-02-26'), courseId: '2' },
-    { id: 'd18', name: 'TD Mathématiques - Calcul différentiel.pdf', addedDate: '24 Février 2024', addedDateObj: new Date('2024-02-24'), courseId: '2' },
-    { id: 'd19', name: 'Exercices - Intégrales.pdf', addedDate: '22 Février 2024', addedDateObj: new Date('2024-02-22'), courseId: '2' },
-    { id: 'd20', name: 'Cours 5 - Probabilités.pdf', addedDate: '20 Février 2024', addedDateObj: new Date('2024-02-20'), courseId: '2' },
-    
-    // Documents pour Biologie
-    { id: 'd21', name: 'Cours 1 - Biologie cellulaire.pdf', addedDate: '13 Mars 2024', addedDateObj: new Date('2024-03-13'), courseId: '3' },
-    { id: 'd22', name: 'TP Biologie - Microscope.pdf', addedDate: '10 Mars 2024', addedDateObj: new Date('2024-03-10'), courseId: '3' },
-    { id: 'd23', name: 'Cours 2 - Génétique.pdf', addedDate: '7 Mars 2024', addedDateObj: new Date('2024-03-07'), courseId: '3' },
-    { id: 'd24', name: 'Devoir - Biologie cellulaire.pdf', addedDate: '5 Mars 2024', addedDateObj: new Date('2024-03-05'), courseId: '3' },
-    { id: 'd25', name: 'Cours 3 - Évolution.pdf', addedDate: '2 Mars 2024', addedDateObj: new Date('2024-03-02'), courseId: '3' },
-    { id: 'd26', name: 'Résumé - Génétique.pdf', addedDate: '28 Février 2024', addedDateObj: new Date('2024-02-28'), courseId: '3' },
-    
-    // Documents pour Géographie
-    { id: 'd27', name: 'Cours 1 - Géographie physique.pdf', addedDate: '12 Mars 2024', addedDateObj: new Date('2024-03-12'), courseId: '4' },
-    { id: 'd28', name: 'TD Géographie - Cartographie.pdf', addedDate: '9 Mars 2024', addedDateObj: new Date('2024-03-09'), courseId: '4' },
-    { id: 'd29', name: 'Cours 2 - Climatologie.pdf', addedDate: '6 Mars 2024', addedDateObj: new Date('2024-03-06'), courseId: '4' },
-    { id: 'd30', name: 'Exposé - Géographie humaine.pdf', addedDate: '4 Mars 2024', addedDateObj: new Date('2024-03-04'), courseId: '4' },
-    { id: 'd31', name: 'Cours 3 - Géomorphologie.pdf', addedDate: '1 Mars 2024', addedDateObj: new Date('2024-03-01'), courseId: '4' },
-    { id: 'd32', name: 'TD Géographie - Climat.pdf', addedDate: '27 Février 2024', addedDateObj: new Date('2024-02-27'), courseId: '4' },
-    { id: 'd33', name: 'Cours 4 - Hydrologie.pdf', addedDate: '25 Février 2024', addedDateObj: new Date('2024-02-25'), courseId: '4' },
-    { id: 'd34', name: 'Exercices - Cartographie.pdf', addedDate: '23 Février 2024', addedDateObj: new Date('2024-02-23'), courseId: '4' },
-    { id: 'd35', name: 'Résumé - Géographie physique.pdf', addedDate: '21 Février 2024', addedDateObj: new Date('2024-02-21'), courseId: '4' },
-    { id: 'd36', name: 'Cours 5 - Biogéographie.pdf', addedDate: '19 Février 2024', addedDateObj: new Date('2024-02-19'), courseId: '4' },
-    
-    // Documents pour Physique
-    { id: 'd37', name: 'Cours 1 - Mécanique.pdf', addedDate: '11 Mars 2024', addedDateObj: new Date('2024-03-11'), courseId: '5' },
-    { id: 'd38', name: 'TP Physique - Mouvement.pdf', addedDate: '8 Mars 2024', addedDateObj: new Date('2024-03-08'), courseId: '5' },
-    { id: 'd39', name: 'Cours 2 - Électromagnétisme.pdf', addedDate: '5 Mars 2024', addedDateObj: new Date('2024-03-05'), courseId: '5' },
-    { id: 'd40', name: 'TD Physique - Mécanique.pdf', addedDate: '3 Mars 2024', addedDateObj: new Date('2024-03-03'), courseId: '5' },
-    { id: 'd41', name: 'Cours 3 - Optique.pdf', addedDate: '1 Mars 2024', addedDateObj: new Date('2024-03-01'), courseId: '5' },
-    { id: 'd42', name: 'Exercices - Électromagnétisme.pdf', addedDate: '28 Février 2024', addedDateObj: new Date('2024-02-28'), courseId: '5' },
-    { id: 'd43', name: 'Cours 4 - Thermodynamique.pdf', addedDate: '26 Février 2024', addedDateObj: new Date('2024-02-26'), courseId: '5' },
-    { id: 'd44', name: 'TP Physique - Optique.pdf', addedDate: '24 Février 2024', addedDateObj: new Date('2024-02-24'), courseId: '5' },
-    { id: 'd45', name: 'Résumé - Mécanique.pdf', addedDate: '22 Février 2024', addedDateObj: new Date('2024-02-22'), courseId: '5' },
-    
-    // Documents pour Histoire
-    { id: 'd46', name: 'Cours 1 - Histoire moderne.pdf', addedDate: '10 Mars 2024', addedDateObj: new Date('2024-03-10'), courseId: '6' },
-    { id: 'd47', name: 'TD Histoire - Révolution française.pdf', addedDate: '7 Mars 2024', addedDateObj: new Date('2024-03-07'), courseId: '6' },
-    { id: 'd48', name: 'Cours 2 - Histoire contemporaine.pdf', addedDate: '4 Mars 2024', addedDateObj: new Date('2024-03-04'), courseId: '6' },
-    { id: 'd49', name: 'Exposé - Histoire de France.pdf', addedDate: '2 Mars 2024', addedDateObj: new Date('2024-03-02'), courseId: '6' },
-    { id: 'd50', name: 'Cours 3 - Histoire médiévale.pdf', addedDate: '28 Février 2024', addedDateObj: new Date('2024-02-28'), courseId: '6' },
-    { id: 'd51', name: 'TD Histoire - Moyen Âge.pdf', addedDate: '26 Février 2024', addedDateObj: new Date('2024-02-26'), courseId: '6' },
-    { id: 'd52', name: 'Résumé - Histoire moderne.pdf', addedDate: '24 Février 2024', addedDateObj: new Date('2024-02-24'), courseId: '6' }
-  ];
-
-  courses: Course[] = [
-    {
-      id: '1',
-      name: 'Chimie',
-      professor: 'Prof. Martin',
-      icon: 'flask',
-      color: '#96a896',
-      lastUpdate: 'Il y a 2 heures',
-      lastUpdateDate: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      documentsCount: 8,
-      progress: 75,
-      isFavorite: true
-    },
-    {
-      id: '2',
-      name: 'Mathématiques',
-      professor: 'Prof. Dubois',
-      icon: 'calculator',
-      color: '#d4a574',
-      lastUpdate: 'Il y a 5 heures',
-      lastUpdateDate: new Date(Date.now() - 5 * 60 * 60 * 1000),
-      documentsCount: 12,
-      progress: 60,
-      isFavorite: false
-    },
-    {
-      id: '3',
-      name: 'Biologie',
-      professor: 'Prof. Laurent',
-      icon: 'flask',
-      color: '#96a896',
-      lastUpdate: 'Hier',
-      lastUpdateDate: new Date(Date.now() - 24 * 60 * 60 * 1000),
-      documentsCount: 6,
-      progress: 50,
-      isFavorite: true
-    },
-    {
-      id: '4',
-      name: 'Géographie',
-      professor: 'Prof. Dubois',
-      icon: 'globe',
-      color: '#d4a574',
-      lastUpdate: 'Il y a 2 jours',
-      lastUpdateDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-      documentsCount: 10,
-      progress: 80,
-      isFavorite: false
-    },
-    {
-      id: '5',
-      name: 'Physique',
-      professor: 'Prof. Bernard',
-      icon: 'flask',
-      color: '#96a896',
-      lastUpdate: 'Il y a 3 jours',
-      lastUpdateDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-      documentsCount: 9,
-      progress: 65,
-      isFavorite: false
-    },
-    {
-      id: '6',
-      name: 'Histoire',
-      professor: 'Prof. Moreau',
-      icon: 'book',
-      color: '#d4a574',
-      lastUpdate: 'Il y a 5 jours',
-      lastUpdateDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-      documentsCount: 7,
-      progress: 45,
-      isFavorite: true
-    }
-  ];
-
-  constructor() {
+  constructor(
+    private studentService: StudentService,
+    private toastController: ToastController
+  ) {
     addIcons({
       'document': document,
       'calendar-outline': calendarOutline,
@@ -208,32 +84,152 @@ export class DocumentPage implements OnInit {
       'globe': globe,
       'book': book,
       'close': close,
-      'document-text': documentText
+      'document-text': documentText,
+      'school': school
     });
   }
 
   ngOnInit() {
-    // Trier par défaut du plus récent au plus ancien
-    this.sortCoursesByDate();
+    // Récupérer l'ID de l'étudiant depuis localStorage
+    const studentDetailStr = localStorage.getItem('studentDetail');
+    if (studentDetailStr) {
+      try {
+        const studentDetail = JSON.parse(studentDetailStr);
+        if (studentDetail.isLoggedIn && studentDetail.localId) {
+          this.studentLocalId = studentDetail.localId;
+          this.loadProgrammesAvecDocuments();
+        }
+      } catch (error) {
+        console.error('Erreur lors de la lecture des données de session:', error);
+      }
+    }
+  }
+
+  loadProgrammesAvecDocuments() {
+    if (!this.studentLocalId) return;
+
+    this.isLoadingDocuments = true;
+    this.studentService.getProgrammesAvecDocuments(this.studentLocalId).subscribe({
+      next: (data) => {
+        this.courses = this.convertToCourses(data);
+        this.isLoadingDocuments = false;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des programmes avec documents:', error);
+        this.isLoadingDocuments = false;
+      }
+    });
+  }
+
+  convertToCourses(data: ProgrammeAvecDocumentsDTO[]): Course[] {
+    return data.map(programme => {
+      // Trier les documents par date (plus récent en premier)
+      const documents: Document[] = (programme.documents || []).map(doc => ({
+        id: doc.localId,
+        localId: doc.localId,
+        name: doc.titre,
+        addedDate: this.formatDate(doc.createdAt),
+        addedDateObj: doc.createdAt ? new Date(doc.createdAt) : new Date(),
+        courseId: programme.programmeLocalId,
+        url: doc.url
+      })).sort((a, b) => b.addedDateObj.getTime() - a.addedDateObj.getTime());
+
+      // Récupérer la date de mise à jour (date du document le plus récent)
+      const lastUpdateDate = documents.length > 0 ? documents[0].addedDateObj : new Date();
+      const lastUpdate = this.formatRelativeDate(lastUpdateDate);
+
+      return {
+        id: programme.programmeLocalId,
+        localId: programme.programmeLocalId,
+        name: programme.matiereName,
+        professor: this.getProfName(programme.profPrenom, programme.profNom),
+        icon: this.getSubjectIcon(programme.matiereName),
+        color: this.getSubjectColor(programme.matiereName),
+        lastUpdate: lastUpdate,
+        lastUpdateDate: lastUpdateDate,
+        documentsCount: programme.nombreDocuments,
+        progress: this.calculateProgress(programme.nombreDocuments), // Placeholder
+        isFavorite: false,
+        documents: documents
+      };
+    });
+  }
+
+  getProfName(prenom: string, nom: string): string {
+    if (prenom && nom) {
+      return `Prof. ${prenom} ${nom}`;
+    }
+    if (nom) {
+      return `Prof. ${nom}`;
+    }
+    return 'Professeur';
+  }
+
+  getSubjectIcon(matiereName: string): string {
+    const name = matiereName.toLowerCase();
+    if (name.includes('math')) return 'calculator';
+    if (name.includes('chimie') || name.includes('bio')) return 'flask';
+    if (name.includes('geo')) return 'globe';
+    if (name.includes('français') || name.includes('francais') || name.includes('littérature')) return 'book';
+    return 'school';
+  }
+
+  getSubjectColor(matiereName: string): string {
+    const name = matiereName.toLowerCase();
+    if (name.includes('math')) return '#d4a574';
+    if (name.includes('chimie') || name.includes('bio')) return '#96a896';
+    if (name.includes('geo')) return '#d4a574';
+    return '#96a896';
+  }
+
+  formatDate(dateString: string | null | undefined): string {
+    if (!dateString) return 'Date inconnue';
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+  }
+
+  formatRelativeDate(date: Date): string {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffHours < 1) {
+      return 'Il y a moins d\'une heure';
+    } else if (diffHours < 24) {
+      return `Il y a ${diffHours} heure${diffHours > 1 ? 's' : ''}`;
+    } else if (diffDays === 1) {
+      return 'Hier';
+    } else if (diffDays < 7) {
+      return `Il y a ${diffDays} jour${diffDays > 1 ? 's' : ''}`;
+    } else {
+      return this.formatDate(date.toISOString());
+    }
+  }
+
+  calculateProgress(documentsCount: number): number {
+    // Placeholder : progress basé sur le nombre de documents
+    // Vous pouvez ajuster cette logique selon vos besoins
+    return Math.min(100, documentsCount * 10);
   }
 
   get filteredCourses(): Course[] {
     let filtered = [...this.courses];
 
     if (this.selectedFilter === 'recent') {
-      // Garder seulement les cours mis à jour dans les 3 derniers jours
-      const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
-      filtered = filtered.filter(course => course.lastUpdateDate >= threeDaysAgo);
+      // Garder seulement les cours mis à jour dans les 7 derniers jours
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      filtered = filtered.filter(course => course.lastUpdateDate >= sevenDaysAgo);
     } else if (this.selectedFilter === 'favorites') {
       filtered = filtered.filter(course => course.isFavorite);
     }
 
     // Trier par date (plus récent en premier)
     return filtered.sort((a, b) => b.lastUpdateDate.getTime() - a.lastUpdateDate.getTime());
-  }
-
-  sortCoursesByDate() {
-    this.courses.sort((a, b) => b.lastUpdateDate.getTime() - a.lastUpdateDate.getTime());
   }
 
   toggleFavorite(courseId: string) {
@@ -257,16 +253,126 @@ export class DocumentPage implements OnInit {
 
   getCourseDocuments(): Document[] {
     if (!this.selectedCourseId) return [];
-    return this.documents
-      .filter(doc => doc.courseId === this.selectedCourseId)
-      .sort((a, b) => b.addedDateObj.getTime() - a.addedDateObj.getTime());
+    const course = this.courses.find(c => c.id === this.selectedCourseId);
+    return course?.documents || [];
   }
 
-  downloadDocument(documentId: string) {
-    const doc = this.documents.find(d => d.id === documentId);
-    if (doc) {
-      console.log('Téléchargement:', doc.name);
-      // Ici vous pouvez ajouter la logique de téléchargement
+  async downloadDocument(documentId: string) {
+    const course = this.getSelectedCourse();
+    if (!course) return;
+
+    const doc = course.documents?.find(d => d.localId === documentId || d.id === documentId);
+    if (!doc || !doc.url) {
+      await this.showToast('Document non trouvé ou URL manquante', 'danger');
+      return;
     }
+
+    try {
+      // Afficher un message de chargement
+      await this.showToast('Téléchargement en cours...', 'primary');
+
+      // Télécharger le fichier depuis l'URL
+      const response = await fetch(doc.url);
+      if (!response.ok) {
+        throw new Error('Erreur lors du téléchargement du fichier');
+      }
+
+      const blob = await response.blob();
+      const arrayBuffer = await blob.arrayBuffer();
+      const base64Data = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+
+      // Déterminer l'extension du fichier depuis l'URL ou le nom
+      const extension = this.getFileExtension(doc.name, doc.url);
+      const fileName = `${doc.localId || documentId}${extension}`;
+      const mimeType = this.getMimeType(extension);
+
+      // Sauvegarder le fichier dans le cache de l'application
+      const savedFile = await Filesystem.writeFile({
+        path: fileName,
+        data: base64Data,
+        directory: Directory.Cache
+      });
+
+      // Obtenir le chemin complet du fichier
+      let filePath = savedFile.uri;
+
+      // Pour iOS, utiliser le chemin complet, pour Android aussi
+      if (Capacitor.getPlatform() === 'ios') {
+        filePath = savedFile.uri;
+      }
+
+      // Ouvrir le fichier avec FileOpener
+      const options: FileOpenerOptions = {
+        filePath: filePath,
+        contentType: mimeType,
+        openWithDefault: true
+      };
+
+      await FileOpener.open(options);
+      await this.showToast('Document ouvert avec succès', 'success');
+    } catch (error: any) {
+      console.error('Erreur lors de l\'ouverture du document:', error);
+
+      // En cas d'erreur, essayer d'ouvrir directement l'URL (fallback pour le web)
+      if (Capacitor.getPlatform() === 'web') {
+        window.open(doc.url, '_blank');
+      } else {
+        await this.showToast('Erreur lors de l\'ouverture du document', 'danger');
+      }
+    }
+  }
+
+  private getFileExtension(fileName: string, url: string): string {
+    // Essayer d'obtenir l'extension depuis le nom du fichier
+    const nameMatch = fileName.match(/\.([a-zA-Z0-9]+)$/);
+    if (nameMatch) {
+      return `.${nameMatch[1].toLowerCase()}`;
+    }
+
+    // Sinon, essayer depuis l'URL
+    try {
+      const urlObj = new URL(url);
+      const pathname = urlObj.pathname;
+      const urlMatch = pathname.match(/\.([a-zA-Z0-9]+)(\?|$)/);
+      if (urlMatch) {
+        return `.${urlMatch[1].toLowerCase()}`;
+      }
+    } catch (e) {
+      // URL invalide, continuer
+    }
+
+    // Extension par défaut
+    return '.pdf';
+  }
+
+  private getMimeType(extension: string): string {
+    const mimeTypes: { [key: string]: string } = {
+      '.pdf': 'application/pdf',
+      '.doc': 'application/msword',
+      '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      '.xls': 'application/vnd.ms-excel',
+      '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      '.ppt': 'application/vnd.ms-powerpoint',
+      '.pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      '.txt': 'text/plain',
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.png': 'image/png',
+      '.gif': 'image/gif',
+      '.zip': 'application/zip',
+      '.rar': 'application/x-rar-compressed'
+    };
+
+    return mimeTypes[extension.toLowerCase()] || 'application/octet-stream';
+  }
+
+  private async showToast(message: string, color: 'success' | 'danger' | 'primary' = 'primary') {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 2000,
+      color: color,
+      position: 'bottom'
+    });
+    await toast.present();
   }
 }

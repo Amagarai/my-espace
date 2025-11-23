@@ -22,7 +22,11 @@
 
   <!-- Announcements Section -->
   <div class="announcements-section">
-    @if (alertes.length > 0) {
+    @if (isLoadingAlertes) {
+      <div class="loading-skeleton">
+        <div class="skeleton-card"></div>
+      </div>
+    } @else if (alertes.length > 0) {
       <div class="announcements-swiper"
            (touchstart)="onSwipeStart($event)"
            (touchmove)="onSwipeMove($event)"
@@ -57,26 +61,49 @@
   </div>
 
   <div class="summary-cards">
-    <div class="summary-card courses-card">
-      <div class="card-header">
-        <ion-icon name="calendar"></ion-icon>
-        <span class="card-label">Cours</span>
+    @if (isLoadingDashboard) {
+      <div class="summary-card courses-card">
+        <div class="card-header">
+          <ion-icon name="calendar"></ion-icon>
+          <span class="card-label">Cours</span>
+        </div>
+        <div class="card-content">
+          <div class="skeleton-number"></div>
+          <div class="skeleton-subtitle"></div>
+        </div>
       </div>
-      <div class="card-content">
-        <div class="card-number">{{ nombreCoursAujourdHui }}</div>
-        <div class="card-subtitle">aujourd'hui</div>
+      <div class="summary-card notes-card">
+        <div class="card-header">
+          <ion-icon name="star"></ion-icon>
+          <span class="card-label">Notes</span>
+        </div>
+        <div class="card-content">
+          <div class="skeleton-number"></div>
+          <div class="skeleton-subtitle"></div>
+        </div>
       </div>
-    </div>
-    <div class="summary-card notes-card">
-      <div class="card-header">
-        <ion-icon name="star"></ion-icon>
-        <span class="card-label">Notes</span>
+    } @else {
+      <div class="summary-card courses-card">
+        <div class="card-header">
+          <ion-icon name="calendar"></ion-icon>
+          <span class="card-label">Cours</span>
+        </div>
+        <div class="card-content">
+          <div class="card-number">{{ nombreCoursAujourdHui }}</div>
+          <div class="card-subtitle">aujourd'hui</div>
+        </div>
       </div>
-      <div class="card-content">
-        <div class="card-number">{{ moyenneGenerale.toFixed(1) }}</div>
-        <div class="card-subtitle">moyenne</div>
+      <div class="summary-card notes-card">
+        <div class="card-header">
+          <ion-icon name="star"></ion-icon>
+          <span class="card-label">Notes</span>
+        </div>
+        <div class="card-content">
+          <div class="card-number">{{ moyenneGenerale.toFixed(1) }}</div>
+          <div class="card-subtitle">moyenne</div>
+        </div>
       </div>
-    </div>
+    }
   </div>
 
   <!-- Schedule Section -->
@@ -86,7 +113,11 @@
       <span class="see-all">Voir tout</span>
     </div>
     <div class="schedule-list">
-      @if (coursAujourdHui.length > 0) {
+      @if (isLoadingDashboard) {
+        @for (item of [1, 2]; track item) {
+          <div class="skeleton-schedule-card"></div>
+        }
+      } @else if (coursAujourdHui.length > 0) {
         @for (cours of coursAujourdHui; track cours.localId) {
           <div class="schedule-card" [class]="getCoursClass($index)">
             <div class="schedule-left">
@@ -155,7 +186,11 @@
       <span class="see-all">Voir tout</span>
     </div>
     <div class="notes-list">
-      @if (recentNotes.length > 0) {
+      @if (isLoadingNotes) {
+        @for (item of [1, 2, 3]; track item) {
+          <div class="skeleton-note-item"></div>
+        }
+      } @else if (recentNotes.length > 0) {
         @for (note of recentNotes; track note.localId) {
           <div class="note-item">
             <div class="note-icon" [class]="getNoteIconClass($index)">

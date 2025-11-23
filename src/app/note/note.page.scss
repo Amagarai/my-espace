@@ -276,3 +276,179 @@
   }
 }
 
+// Loading Skeleton
+.skeleton-subject {
+  min-height: 200px;
+}
+
+.skeleton-content {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s ease-in-out infinite;
+  border-radius: 12px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// No Notes Message
+.no-notes {
+  background: white;
+  border-radius: 16px;
+  padding: 60px 20px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+
+  p {
+    font-size: 14px;
+    color: #8c8c8c;
+    margin: 0;
+  }
+}
+
+// Relevers Section
+.relevers-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.relever-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+
+  &.validated {
+    border-left: 4px solid #96a896;
+  }
+
+  &:not(.validated) {
+    border-left: 4px solid #f59e0b;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.relever-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.relever-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 24px;
+    color: white;
+  }
+}
+
+.relever-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+  }
+
+  .validated-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    background: #e8f5e9;
+    color: #96a896;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .pending-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    background: #fff3e0;
+    color: #f59e0b;
+    font-size: 12px;
+    font-weight: 600;
+  }
+}
+
+.relever-scores {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.score-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: #f8f9f8;
+  border-radius: 12px;
+
+  &.average-item {
+    background: linear-gradient(135deg, #f0f8f0 0%, #ffffff 100%);
+  }
+
+  .score-label {
+    font-size: 12px;
+    color: #8c8c8c;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .score-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a1a;
+
+    &.green-badge {
+      color: #96a896;
+    }
+
+    &.orange-badge {
+      color: #d4a574;
+    }
+
+    &.yellow-badge {
+      color: #f59e0b;
+    }
+
+    &.red-badge {
+      color: #ef4444;
+    }
+  }
+}
+
+.skeleton-relever {
+  min-height: 150px;
+}
+

@@ -47,9 +47,14 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   // Données des alertes
   alertes: any[] = [];
   currentAlerteIndex: number = 0;
+  isLoadingAlertes: boolean = false;
 
   // Données des notes
   recentNotes: any[] = [];
+  isLoadingNotes: boolean = false;
+
+  // Données du dashboard
+  isLoadingDashboard: boolean = false;
   private swipeStartX: number = 0;
   private swipeEndX: number = 0;
   private autoSlideInterval: any;
@@ -91,10 +96,12 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   loadAlertes() {
     if (!this.studentLocalId) return;
 
+    this.isLoadingAlertes = true;
     this.studentService.getRecentAlertes(this.studentLocalId).subscribe({
       next: (data) => {
         this.alertes = data || [];
         this.currentAlerteIndex = 0;
+        this.isLoadingAlertes = false;
         // Démarrer le slider automatique si on a plus d'une alerte
         if (this.alertes.length > 1) {
           this.startAutoSlide();
@@ -102,6 +109,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
       },
       error: (error) => {
         console.error('Erreur lors du chargement des alertes:', error);
+        this.isLoadingAlertes = false;
       }
     });
   }
@@ -109,12 +117,15 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   loadRecentNotes() {
     if (!this.studentLocalId) return;
 
+    this.isLoadingNotes = true;
     this.studentService.getRecentNotes(this.studentLocalId).subscribe({
       next: (data) => {
         this.recentNotes = data || [];
+        this.isLoadingNotes = false;
       },
       error: (error) => {
         console.error('Erreur lors du chargement des notes:', error);
+        this.isLoadingNotes = false;
       }
     });
   }
@@ -168,14 +179,17 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   loadDashboardData() {
     if (!this.studentLocalId) return;
 
+    this.isLoadingDashboard = true;
     this.studentService.getDashboardData(this.studentLocalId).subscribe({
       next: (data) => {
         this.nombreCoursAujourdHui = data.nombreCoursAujourdHui;
         this.moyenneGenerale = data.moyenneGenerale || 0;
         this.coursAujourdHui = data.coursAujourdHui || [];
+        this.isLoadingDashboard = false;
       },
       error: (error) => {
         console.error('Erreur lors du chargement des données du dashboard:', error);
+        this.isLoadingDashboard = false;
       }
     });
   }

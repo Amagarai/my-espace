@@ -23,6 +23,7 @@ import {
   createOutline,
   chevronForward
 } from 'ionicons/icons';
+import { StudentService, StudentProfileDTO } from '../services/student.service';
 
 interface Student {
   firstName: string;
@@ -46,41 +47,130 @@ interface Student {
 })
 export class ProfilPage implements OnInit {
   student: Student = {
-    firstName: 'Emma',
-    lastName: 'Martin',
-    studentId: 'ETU-2024-001',
-    level: 'L3',
-    major: 'Sciences de la Vie',
-    academicYear: '2024-2025',
-    email: 'emma.martin@university.edu',
-    phone: '+33 6 12 34 56 78',
-    address: '123 Rue de la République, 75001 Paris',
-    birthDate: '15 Juin 2002'
+    firstName: '',
+    lastName: '',
+    studentId: '',
+    level: '',
+    major: '',
+    academicYear: '',
+    email: '',
+    phone: '',
+    address: '',
+    birthDate: ''
   };
 
-  constructor() {
-    addIcons({
-      'camera': camera,
-      'checkmark-circle': checkmarkCircle,
-      'school': school,
-      'book': book,
-      'calendar': calendar,
-      'mail': mail,
-      'call': call,
-      'location': location,
-      'calendar-outline': calendarOutline,
-      'star': star,
-      'document-text': documentText,
-      'notifications-outline': notificationsOutline,
-      'lock-closed-outline': lockClosedOutline,
-      'language-outline': languageOutline,
-      'help-circle-outline': helpCircleOutline,
-      'log-out-outline': logOutOutline,
-      'create-outline': createOutline,
-      'chevron-forward': chevronForward
-    });
+  studentLocalId: string = '';
+  studentInitials: string = '';
+  isLoadingProfile: boolean = false;
+  moyenneGenerale: number = 0;
+  nombreCours: number = 0;
+  nombreNotes: number = 0;
+
+  constructor(private studentService: StudentService) {
+    addIcons({camera,checkmarkCircle,school,book,calendar,createOutline,mail,call,location,calendarOutline,star,documentText,notificationsOutline,chevronForward,lockClosedOutline,languageOutline,helpCircleOutline,logOutOutline});
   }
 
   ngOnInit() {
+    this.loadStudentProfile();
+  }
+
+  loadStudentProfile() {
+    // Récupérer l'ID de l'étudiant depuis localStorage
+    const studentDetailStr = localStorage.getItem('studentDetail');
+    if (!studentDetailStr) {
+      console.error('Aucune donnée de session trouvée');
+      return;
+    }
+
+    try {
+      const studentDetail = JSON.parse(studentDetailStr);
+      if (studentDetail.isLoggedIn && studentDetail.localId) {
+        this.studentLocalId = studentDetail.localId;
+
+        // Remplir les informations de base depuis localStorage
+        this.student.firstName = studentDetail.prenom || '';
+        this.student.lastName = studentDetail.nom || '';
+        this.student.email = studentDetail.email || '';
+        this.student.studentId = studentDetail.username || studentDetail.localId || '';
+        this.studentInitials = this.getInitials(studentDetail.prenom || '', studentDetail.nom || '');
+
+        // Charger les données complètes depuis le backend
+        this.loadFullStudentData();
+      }
+    } catch (error) {
+      console.error('Erreur lors de la lecture des données de session:', error);
+    }
+  }
+
+  loadFullStudentData() {
+    if (!this.studentLocalId) return;
+
+    this.isLoadingProfile = true;
+
+    // Charger les informations complètes du profil
+    this.studentService.getStudentProfile(this.studentLocalId).subscribe({
+      next: (profileData) => {
+        // Mettre à jour les informations de l'étudiant
+        this.student.firstName = profileData.prenom || '';
+        this.student.lastName = profileData.nom || '';
+        this.student.email = profileData.email || '';
+        this.student.studentId = profileData.idNum || profileData.username || '';
+        this.student.phone = profileData.numero || '';
+        this.student.level = profileData.niveau || '';
+        this.student.major = profileData.filiere || '';
+        this.student.academicYear = profileData.anneeAcademique || '';
+
+        // Formater la date de naissance
+        if (profileData.dateOfBirth) {
+          this.student.birthDate = this.formatDate(profileData.dateOfBirth);
+        }
+
+        // Mettre à jour les initiales
+        this.studentInitials = this.getInitials(profileData.prenom || '', profileData.nom || '');
+
+        this.isLoadingProfile = false;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement du profil:', error);
+        this.isLoadingProfile = false;
+      }
+    });
+
+    // Charger les données du dashboard pour avoir les statistiques
+    this.studentService.getDashboardData(this.studentLocalId).subscribe({
+      next: (dashboardData) => {
+        this.moyenneGenerale = dashboardData.moyenneGenerale || 0;
+        this.nombreCours = dashboardData.nombreCoursAujourdHui || 0;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des données du dashboard:', error);
+      }
+    });
+
+    // Charger le nombre total de notes
+    this.studentService.getRecentNotes(this.studentLocalId).subscribe({
+      next: (notes) => {
+        this.nombreNotes = notes ? notes.length : 0;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des notes:', error);
+      }
+    });
+  }
+
+  formatDate(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+  }
+
+  getInitials(prenom: string, nom: string): string {
+    const firstInitial = prenom && prenom.length > 0 ? prenom.charAt(0).toUpperCase() : '';
+    const lastInitial = nom && nom.length > 0 ? nom.charAt(0).toUpperCase() : '';
+    return (firstInitial + lastInitial) || 'E';
   }
 }
