@@ -44,30 +44,7 @@ export class LoginPage implements OnInit {
   }
 
   ngOnInit() {
-    // Vérifier si l'utilisateur est déjà connecté (étudiant)
-    const studentDetailStr = localStorage.getItem('studentDetail');
-    if (studentDetailStr) {
-      try {
-        const studentDetail = JSON.parse(studentDetailStr);
-        if (studentDetail.isLoggedIn) {
-          // Vérifier si l'utilisateur a le rôle étudiant
-          const roles = studentDetail.roles || [];
-          const hasStudentRole = roles.some((role: string) =>
-            role === 'STUDENT' || role === 'ÉTUDIANT' || role === 'ETUDIANT'
-          );
-
-          if (hasStudentRole) {
-            this.router.navigate(['/tabs/home']);
-          } else {
-            // Si pas le rôle étudiant, supprimer la session et rester sur login
-            localStorage.removeItem('studentDetail');
-          }
-        }
-      } catch (error) {
-        console.error('Erreur lors de la lecture des données de session:', error);
-        localStorage.removeItem('studentDetail');
-      }
-    }
+    // La logique de vérification est maintenant gérée par le loginGuard
   }
 
   togglePasswordVisibility() {
