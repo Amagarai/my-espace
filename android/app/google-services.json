@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1022504615162",
+    "project_id": "ac-gesu",
+    "storage_bucket": "ac-gesu.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1022504615162:android:5461a33af1a21ef8eadd43",
+        "android_client_info": {
+          "package_name": "com.ac.myespace"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4lpzx24fUJQoQwe7tviR94R3WhpJuJDk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

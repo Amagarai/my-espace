@@ -50,6 +50,18 @@ export interface NotesGroupesParMatiereDTO {
 
 export interface ReleverEtudiantDTO {
   localId: string;
+  matiereName?: string; // Nom de la matière (si relevé de matière) ou null (si relevé d'UE)
+  ueName?: string; // Nom de l'UE (si relevé d'UE) ou null (si relevé de matière)
+  ueLocalId?: string; // ID de l'UE pour grouper
+  devoir: number;
+  examen: number;
+  moyenne: number;
+  valider: boolean;
+  ue?: boolean; // true si c'est un relevé d'UE, false si c'est un relevé de matière
+  matieresIndividuelles?: ReleverMatiereIndividuelleDTO[]; // Liste des matières individuelles de l'UE (si ue = true)
+}
+
+export interface ReleverMatiereIndividuelleDTO {
   matiereName: string;
   devoir: number;
   examen: number;

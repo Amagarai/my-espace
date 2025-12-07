@@ -31,6 +31,11 @@ interface Subject {
   average: number;
   notes: Note[];
 }
+interface ReleverGroupe {
+  ueLocalId?: string;
+  ueName?: string;
+  items: ReleverEtudiantDTO[]; // Matières individuelles + relevé UE
+}
 
 @Component({
   selector: 'app-note',
@@ -39,10 +44,13 @@ interface Subject {
   standalone: true,
   imports: [IonContent, IonIcon, CommonModule, FormsModule]
 })
+
+
 export class NotePage implements OnInit {
   selectedFilter: string = 'notes';
   subjects: Subject[] = [];
   relevers: ReleverEtudiantDTO[] = [];
+  releversGroupes: ReleverGroupe[] = []; // Relevés groupés par UE
   isLoadingNotes: boolean = false;
   isLoadingRelevers: boolean = false;
   studentLocalId: string = '';
@@ -71,7 +79,7 @@ export class NotePage implements OnInit {
 
   selectFilter(filter: string) {
     this.selectedFilter = filter;
-    if (filter === 'relevers' && this.relevers.length === 0) {
+    if (filter === 'relevers' && this.releversGroupes.length === 0) {
       this.loadRelevers();
     }
   }
@@ -83,6 +91,7 @@ export class NotePage implements OnInit {
     this.studentService.getRelevers(this.studentLocalId).subscribe({
       next: (data) => {
         this.relevers = data || [];
+        this.releversGroupes = this.groupReleversByUE(data || []);
         this.isLoadingRelevers = false;
       },
       error: (error) => {
@@ -90,6 +99,50 @@ export class NotePage implements OnInit {
         this.isLoadingRelevers = false;
       }
     });
+  }
+
+  groupReleversByUE(relevers: ReleverEtudiantDTO[]): ReleverGroupe[] {
+    const groupesMap = new Map<string, ReleverGroupe>();
+    const releversSimples: ReleverEtudiantDTO[] = [];
+
+    // Séparer les relevés par UE et les relevés simples
+    for (const relever of relevers) {
+      if (relever.ueLocalId && relever.ueName) {
+        // C'est un relevé lié à une UE (matière ou UE)
+        if (!groupesMap.has(relever.ueLocalId)) {
+          groupesMap.set(relever.ueLocalId, {
+            ueLocalId: relever.ueLocalId,
+            ueName: relever.ueName,
+            items: []
+          });
+        }
+        groupesMap.get(relever.ueLocalId)!.items.push(relever);
+      } else {
+        // C'est un relevé simple (matière sans UE)
+        releversSimples.push(relever);
+      }
+    }
+
+    // Trier les items dans chaque groupe : d'abord les matières individuelles, puis le relevé UE
+    for (const groupe of groupesMap.values()) {
+      groupe.items.sort((a, b) => {
+        if (a.ue && !b.ue) return 1; // UE après les matières
+        if (!a.ue && b.ue) return -1; // Matières avant l'UE
+        return 0;
+      });
+    }
+
+    // Convertir en tableau et ajouter les relevés simples
+    const result: ReleverGroupe[] = Array.from(groupesMap.values());
+
+    // Ajouter les relevés simples comme des groupes individuels
+    for (const relever of releversSimples) {
+      result.push({
+        items: [relever]
+      });
+    }
+
+    return result;
   }
 
   loadNotes() {
@@ -143,7 +196,8 @@ export class NotePage implements OnInit {
     return titles[type] || type || 'Note';
   }
 
-  getSubjectIcon(matiereName: string): string {
+  getSubjectIcon(matiereName: string | null | undefined): string {
+    if (!matiereName) return 'school';
     const name = matiereName.toLowerCase();
     if (name.includes('math')) return 'calculator';
     if (name.includes('chimie') || name.includes('bio')) return 'flask';
@@ -152,7 +206,8 @@ export class NotePage implements OnInit {
     return 'school';
   }
 
-  getSubjectColor(matiereName: string): string {
+  getSubjectColor(matiereName: string | null | undefined): string {
+    if (!matiereName) return '#96a896';
     const name = matiereName.toLowerCase();
     if (name.includes('math')) return '#d4a574';
     if (name.includes('chimie') || name.includes('bio')) return '#96a896';

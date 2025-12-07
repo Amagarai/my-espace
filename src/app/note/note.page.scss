@@ -321,62 +321,25 @@
   gap: 16px;
 }
 
-.relever-card {
+.relever-group-card {
   background: white;
   border-radius: 16px;
-  padding: 20px;
+  padding: 18px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-  transition: all 0.2s ease;
-
-  &.validated {
-    border-left: 4px solid #96a896;
-  }
-
-  &:not(.validated) {
-    border-left: 4px solid #f59e0b;
-  }
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  }
 }
 
-.relever-header {
+.relever-item-header {
   display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 18px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.relever-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  ion-icon {
-    font-size: 24px;
-    color: white;
-  }
-}
-
-.relever-info {
-  flex: 1;
-  display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
 
-  h3 {
-    font-size: 18px;
+  .relever-item-name {
+    font-size: 16px;
     font-weight: 600;
     color: #1a1a1a;
     margin: 0;
+    flex: 1;
   }
 
   .validated-badge {
@@ -398,27 +361,24 @@
   }
 }
 
-.relever-scores {
+.relever-item-scores {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 .score-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 12px;
+  gap: 6px;
+  padding: 10px;
   background: #f8f9f8;
-  border-radius: 12px;
-
-  &.average-item {
-    background: linear-gradient(135deg, #f0f8f0 0%, #ffffff 100%);
-  }
+  border-radius: 8px;
 
   .score-label {
-    font-size: 12px;
+    font-size: 11px;
     color: #8c8c8c;
     font-weight: 500;
     text-transform: uppercase;
@@ -426,8 +386,8 @@
   }
 
   .score-value {
-    font-size: 18px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 600;
     color: #1a1a1a;
 
     &.green-badge {
@@ -446,6 +406,12 @@
       color: #ef4444;
     }
   }
+}
+
+.relever-separator {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 16px 0;
 }
 
 .skeleton-relever {

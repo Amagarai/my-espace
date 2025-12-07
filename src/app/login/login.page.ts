@@ -79,6 +79,9 @@ export class LoginPage implements OnInit {
             return;
           }
 
+          // Stocker le token dans localStorage (géré par AuthService)
+          // Le token est déjà stocké par AuthService.login() via tap()
+          
           // Créer un objet avec toutes les informations utilisateur
           const studentDetail = {
             isLoggedIn: true,
@@ -101,12 +104,31 @@ export class LoginPage implements OnInit {
           this.isLoading = false;
         },
         error: (error) => {
-          console.error('Erreur de connexion:', error);
-          if (error.error && error.error.message) {
-            this.errorMessage = error.error.message;
-          } else {
-            this.errorMessage = 'Email ou mot de passe incorrect.';
+          console.error('❌ Erreur de connexion complète:', error);
+          console.error('Status:', error.status);
+          console.error('Error body:', error.error);
+          
+          // Extraire le message d'erreur du backend
+          let errorMsg = 'Email ou mot de passe incorrect.';
+          
+          if (error.error) {
+            if (typeof error.error === 'string') {
+              try {
+                const parsedError = JSON.parse(error.error);
+                errorMsg = parsedError.message || errorMsg;
+              } catch (e) {
+                errorMsg = error.error || errorMsg;
+              }
+            } else if (error.error.message) {
+              errorMsg = error.error.message;
+            } else if (error.error.error) {
+              errorMsg = error.error.error;
+            }
+          } else if (error.message) {
+            errorMsg = error.message;
           }
+          
+          this.errorMessage = errorMsg;
           this.isLoading = false;
         }
       });

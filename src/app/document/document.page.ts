@@ -21,8 +21,7 @@ import {
   school
 } from 'ionicons/icons';
 import { StudentService, ProgrammeAvecDocumentsDTO, DocumentEtudiantDTO } from '../services/student.service';
-import { FileOpener, FileOpenerOptions } from '@capacitor-community/file-opener';
-import { Filesystem, Directory } from '@capacitor/filesystem';
+import { FileViewer } from '@capacitor/file-viewer';
 import { Capacitor } from '@capacitor/core';
 import { ToastController } from '@ionic/angular';
 
@@ -112,6 +111,7 @@ export class DocumentPage implements OnInit {
     this.studentService.getProgrammesAvecDocuments(this.studentLocalId).subscribe({
       next: (data) => {
         this.courses = this.convertToCourses(data);
+        console.log('🔍 Programmes avec documents:', this.courses);
         this.isLoadingDocuments = false;
       },
       error: (error) => {
@@ -269,56 +269,29 @@ export class DocumentPage implements OnInit {
 
     try {
       // Afficher un message de chargement
-      await this.showToast('Téléchargement en cours...', 'primary');
+      await this.showToast('Ouverture du document...', 'primary');
 
-      // Télécharger le fichier depuis l'URL
-      const response = await fetch(doc.url);
-      if (!response.ok) {
-        throw new Error('Erreur lors du téléchargement du fichier');
+      // Pour le web, ouvrir directement dans un nouvel onglet
+      if (Capacitor.getPlatform() === 'web') {
+        window.open(doc.url, '_blank');
+        await this.showToast('Document ouvert avec succès', 'success');
+        return;
       }
 
-      const blob = await response.blob();
-      const arrayBuffer = await blob.arrayBuffer();
-      const base64Data = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+      console.log('📄 Ouverture du document depuis l\'URL:', doc.url);
 
-      // Déterminer l'extension du fichier depuis l'URL ou le nom
-      const extension = this.getFileExtension(doc.name, doc.url);
-      const fileName = `${doc.localId || documentId}${extension}`;
-      const mimeType = this.getMimeType(extension);
-
-      // Sauvegarder le fichier dans le cache de l'application
-      const savedFile = await Filesystem.writeFile({
-        path: fileName,
-        data: base64Data,
-        directory: Directory.Cache
+      // Ouvrir directement depuis l'URL avec FileViewer
+      await FileViewer.openDocumentFromUrl({
+        url: doc.url
       });
 
-      // Obtenir le chemin complet du fichier
-      let filePath = savedFile.uri;
-
-      // Pour iOS, utiliser le chemin complet, pour Android aussi
-      if (Capacitor.getPlatform() === 'ios') {
-        filePath = savedFile.uri;
-      }
-
-      // Ouvrir le fichier avec FileOpener
-      const options: FileOpenerOptions = {
-        filePath: filePath,
-        contentType: mimeType,
-        openWithDefault: true
-      };
-
-      await FileOpener.open(options);
       await this.showToast('Document ouvert avec succès', 'success');
     } catch (error: any) {
       console.error('Erreur lors de l\'ouverture du document:', error);
-
-      // En cas d'erreur, essayer d'ouvrir directement l'URL (fallback pour le web)
-      if (Capacitor.getPlatform() === 'web') {
-        window.open(doc.url, '_blank');
-      } else {
-        await this.showToast('Erreur lors de l\'ouverture du document', 'danger');
-      }
+      await this.showToast(
+        error.message || 'Erreur lors de l\'ouverture du document',
+        'danger'
+      );
     }
   }
 

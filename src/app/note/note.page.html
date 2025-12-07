@@ -99,38 +99,49 @@
             <div class="skeleton-content"></div>
           </div>
         }
-      } @else if (relevers.length > 0) {
-        @for (relever of relevers; track relever.localId) {
-          <div class="relever-card" [class.validated]="relever.valider">
-            <div class="relever-header">
-              <div class="relever-icon" [style.background]="getSubjectColor(relever.matiereName)">
-                <ion-icon [name]="getSubjectIcon(relever.matiereName)"></ion-icon>
-              </div>
-              <div class="relever-info">
-                <h3>{{ relever.matiereName }}</h3>
+      } @else if (releversGroupes.length > 0) {
+        @for (groupe of releversGroupes; track groupe.ueLocalId || groupe.items[0]?.localId) {
+          <div class="relever-group-card">
+            @for (relever of groupe.items; track relever.localId; let isLast = $last) {
+              <!-- Header avec nom de matière/UE et badge validé -->
+              <div class="relever-item-header">
+                <h3 class="relever-item-name">
+                  @if (relever.ue && relever.ueName) {
+                    {{ relever.ueName }} (UE)
+                  } @else {
+                    {{ relever.matiereName }}
+                  }
+                </h3>
                 @if (relever.valider) {
                   <span class="validated-badge">Validé</span>
                 } @else {
                   <span class="pending-badge">En attente</span>
                 }
               </div>
-            </div>
-            <div class="relever-scores">
-              <div class="score-item">
-                <span class="score-label">Devoir</span>
-                <span class="score-value">{{ relever.devoir ? relever.devoir.toFixed(2) : '-' }}/20</span>
+
+              <!-- Scores -->
+              <div class="relever-item-scores">
+                <div class="score-item">
+                  <span class="score-label">Devoir</span>
+                  <span class="score-value">{{ relever.devoir ? relever.devoir.toFixed(2) : '-' }}/20</span>
+                </div>
+                <div class="score-item">
+                  <span class="score-label">Examen</span>
+                  <span class="score-value">{{ relever.examen ? relever.examen.toFixed(2) : '-' }}/20</span>
+                </div>
+                <div class="score-item">
+                  <span class="score-label">Moyenne</span>
+                  <span class="score-value" [class]="getScoreClassForRelever(relever.moyenne)">
+                    {{ relever.moyenne ? relever.moyenne.toFixed(2) : '-' }}/20
+                  </span>
+                </div>
               </div>
-              <div class="score-item">
-                <span class="score-label">Examen</span>
-                <span class="score-value">{{ relever.examen ? relever.examen.toFixed(2) : '-' }}/20</span>
-              </div>
-              <div class="score-item average-item">
-                <span class="score-label">Moyenne</span>
-                <span class="score-value" [class]="getScoreClassForRelever(relever.moyenne)">
-                  {{ relever.moyenne ? relever.moyenne.toFixed(2) : '-' }}/20
-                </span>
-              </div>
-            </div>
+
+              <!-- Séparateur (sauf pour le dernier élément) -->
+              @if (!isLast) {
+                <hr class="relever-separator">
+              }
+            }
           </div>
         }
       } @else {
